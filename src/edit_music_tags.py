@@ -80,7 +80,7 @@ def exctract_artwork(song_path, song_tag, is_any_cover_image, songs_wo_artwork):
             image = Image.open(io.BytesIO(art_data))
             try:
                 image.save(
-                    os.path.join(os.path.dirname(song_path), "non_prog_temp.jpg"),
+                    song_path.parents[0]/"non_prog_temp.jpg",
                     "JPEG",
                     quality=80,
                     optimize=True,
@@ -89,7 +89,7 @@ def exctract_artwork(song_path, song_tag, is_any_cover_image, songs_wo_artwork):
             except:
                 image = image.convert("RGB")
                 image.save(
-                    os.path.join(os.path.dirname(song_path), "non_prog_temp.jpg"),
+                    song_path.parents[0]/"non_prog_temp.jpg",
                     "JPEG",
                     quality=80,
                     optimize=True,
@@ -111,7 +111,7 @@ def get_music_files_paths(music_dir):
         and not f.startswith("._")
     ]
 
-    paths = [os.path.join(music_dir, file) for file in files]
+    paths = [music_dir/file for file in files]
 
     return paths
 
@@ -127,7 +127,7 @@ def get_images_files_paths(music_dir):
         and not f.startswith("._")
     ]
 
-    paths = [os.path.join(music_dir, file) for file in files]
+    paths = [music_dir/file for file in files]
 
     return paths
 
@@ -146,8 +146,8 @@ def assign_non_prog_artwork_to_song_list(music_dir, music_files_paths):
 
     image_files_paths = get_images_files_paths(music_dir)
 
-    if os.path.join(music_dir, "non_prog_temp.jpg") in image_files_paths:
-        image_path = os.path.join(music_dir, "non_prog_temp.jpg")
+    if music_dir/"non_prog_temp.jpg" in image_files_paths:
+        image_path = music_dir/"non_prog_temp.jpg"
 
         for song_path in music_files_paths:
             assign_artwork_to_song(song_path, image_path)
@@ -190,7 +190,7 @@ def loop_over_a_music_path(
                 image = Image.open(io.BytesIO(image))
                 try:
                     image.save(
-                        os.path.join(music_dir, "non_prog_temp.jpg"),
+                        music_dir/"non_prog_temp.jpg",
                         "JPEG",
                         quality=80,
                         optimize=True,
@@ -199,7 +199,7 @@ def loop_over_a_music_path(
                 except:
                     image = image.convert("RGB")
                     image.save(
-                        os.path.join(music_dir, "non_prog_temp.jpg"),
+                        music_dir/"non_prog_temp.jpg",
                         "JPEG",
                         quality=80,
                         optimize=True,
@@ -228,26 +228,23 @@ def loop_over_a_music_path(
 
             assign_non_prog_artwork_to_song_list(music_dir, songs_wo_artwork_paths)
 
-        if strip_tags:
-
-            strip_song_tags(song_tag, song_path)
 
         image_files_paths = get_images_files_paths(music_dir)
 
-        if os.path.join(music_dir, "non_prog_temp.jpg") in image_files_paths:
+        if music_dir/"non_prog_temp.jpg" in image_files_paths:
             if create_cover_jpg:
                 shutil.copyfile(
-                    os.path.join(music_dir, "non_prog_temp.jpg"),
-                    os.path.join(music_dir, "cover.jpg"),
+                    music_dir/"non_prog_temp.jpg",
+                    music_dir/"cover.jpg",
                 )
             if create_album_jpg:
 
                 shutil.copyfile(
-                    os.path.join(music_dir, "non_prog_temp.jpg"),
-                    os.path.join(music_dir, f"{album_title}.jpg"),
+                    music_dir/"non_prog_temp.jpg",
+                    music_dir/f"{album_title}.jpg",
                 )
 
-            os.remove(os.path.join(music_dir, "non_prog_temp.jpg"))
+            os.remove(music_dir/"non_prog_temp.jpg")
 
         elif songs_wo_artwork_paths:
             print("**** Album wo artwork: ", music_dir)

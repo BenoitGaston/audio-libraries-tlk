@@ -10,6 +10,9 @@ from convertion_functions import df_to_m3u8, PL_to_m3u8, convert_playlists
 import datetime
 import pickle
 import parameters as param
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_lib_as_lib(path_to_lib_folder, lib_name, path_to_dest_folder):
@@ -28,17 +31,16 @@ def get_lib_as_lib(path_to_lib_folder, lib_name, path_to_dest_folder):
 
     if pkl_name in os.listdir(path_to_dest_folder):
 
-        with open(os.path.join(path_to_dest_folder, pkl_name), "rb") as handle:
+        with open(path_to_dest_folder/pkl_name, "rb") as handle:
 
             lib = pickle.load(handle)
     else:
         # must first parse...
-        print(
-            f"! Be Patient. Parsing your {lib_name} will take a long time (~60mins for a 30k songs lib with a Mac mini M2) !"
+        logging.info(f"! Be Patient. Parsing your {lib_name} will take a long time (~60mins for a 30k songs lib with a Mac mini M2) !"
         )
-        lib = library.parse(os.path.join(path_to_lib_folder, lib_name))
+        lib = library.parse(path_to_lib_folder/lib_name)
 
-        with open(os.path.join(path_to_dest_folder, pkl_name), "wb") as handle:
+        with open(path_to_dest_folder/pkl_name, "wb") as handle:
             pickle.dump(lib, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     return lib
@@ -55,7 +57,7 @@ def convert_lib_to_csv(path_to_lib_folder, lib_name, path_to_dest_folder):
         _type_: _description_
     """
 
-    tree = ET.parse(os.path.join(path_to_lib_folder, lib_name))
+    tree = ET.parse(path_to_lib_folder/lib_name)
     root = tree.getroot()
 
     columns = sorted(
@@ -119,8 +121,9 @@ def convert_lib_to_csv(path_to_lib_folder, lib_name, path_to_dest_folder):
         "Track Number",
         "Year",
     ]
-    print(df.shape)
-    print(df.columns)
+    logging.info(f'Shape of your Lib Data {df.shape}')
+    logging.info(f'Columns of your Lib csv {df.columns}')
+
     df[numeric_columns] = df[numeric_columns].apply(pd.to_numeric)
 
     date_columns = [
@@ -184,10 +187,8 @@ def convert_lib_to_csv(path_to_lib_folder, lib_name, path_to_dest_folder):
         col for col in df.columns if col not in usefull_cols
     ]
     # df.loc[:,'Location'] = df.loc[:,'Location'].apply(lambda x : unquote(x))
-    df[all_cols].to_csv(
-        os.path.join(path_to_dest_folder, f"{lib_name.split('.')[0]}.csv")
-    )
-
+    df[all_cols].to_csv(path_to_dest_folder/f"{lib_name.split('.')[0]}.csv")
+    
     return df[all_cols]
 
 
@@ -205,10 +206,10 @@ def get_lib_as_csv(path_to_lib_folder, lib_name, path_to_dest_folder):
     csv_name = f"{lib_name}.csv"
     if csv_name in os.listdir(path_to_dest_folder):
 
-        df_lib = pd.read_csv(os.path.join(path_to_dest_folder, csv_name))
+        df_lib = pd.read_csv(path_to_dest_folder/csv_name)
     else:
         # must first parse...
-        print("! Be Patient this will take a few seconds !")
+        logging.info("! Be Patient this will take a few seconds !")
         df_lib = convert_lib_to_csv(path_to_lib_folder, lib_name, path_to_dest_folder)
 
     df_lib = df_lib.dropna(subset=["Artist"])
@@ -296,7 +297,7 @@ def assign_score_to_df(
     df_list = []
     try:
         for i in range(len(pl_list)):
-            print(pl_list[i])
+            logging.debug(f'Extracting Playlist {pl_list[i]}')
 
             pl_dict[i] = lib_lib.getPlaylist(pl_list[i])
             df = PL_to_m3u8(path_to_lib, pl_dict[i])
@@ -353,10 +354,10 @@ def get_cd_df(
     df_lib = df_lib.merge(grouped_df, on=group_features)
     try:
         df_lib.loc[:, "Album Location"] = df_lib.loc[:, "Location"].apply(
-            lambda y: os.path.dirname(y)
+            lambda y: y.parent[0]
         )
     except:
-        print("Something wrong in Locations")
+        logging.error("Unable to read all the locations")
 
     return df_lib, grouped_df
 
@@ -382,13 +383,10 @@ def get_scanned_df(
     )
 
     if len(scanned_files) > 0 and not force_scan:
-        df_lib_scanned = pd.read_csv(
-            os.path.join(path_to_dest_folder, scanned_files[-1])
+        df_lib_scanned = pd.read_csv(path_to_dest_folder/scanned_files[-1]
         )
     else:
-        print(files)
-        print(f"{str(datetime.datetime.now().date())}_music_lib_scan.csv")
-        print(
+        logging.info(
             f"! Be Patient. Scanning all the music your {music_lib_path} will take a long time (~15mins for a 30k songs lib with a Mac mini M2) !"
         )
 
@@ -400,12 +398,9 @@ def get_scanned_df(
             convert_to_non_prog=convert_to_non_prog,
         )
 
-        df_lib_scanned.to_csv(
-            os.path.join(
-                path_to_dest_folder,
-                f"{str(datetime.datetime.now().date())}_music_lib_scan.csv",
+        df_lib_scanned.to_csv(path_to_dest_folder/f"{str(datetime.datetime.now().date())}_music_lib_scan.csv",
             )
-        )
+        
 
     return df_lib_scanned
 
@@ -464,13 +459,10 @@ class LibScan:
         if path_to_dest_folder != None:
             self.path_to_dest_folder = path_to_dest_folder
         else:
-            self.path_to_dest_folder = os.path.join(
-                os.path.dirname(os.getcwd()), "itunes-lib-data"
-            )
+            self.path_to_dest_folder = os.getcwd().parent[1]/"itunes-lib-data"
+    
 
-            if "itunes-lib-data" not in os.listdir(
-                os.path.join(os.path.dirname(os.getcwd()))
-            ):
+            if "itunes-lib-data" not in os.listdir(os.getcwd().parent[1]):
                 os.mkdir(self.path_to_dest_folder)
 
         self.create_cover_jpg = create_cover_jpg
@@ -480,8 +472,8 @@ class LibScan:
 
         if path_to_library_file != None:
             self.path_to_library_file = path_to_library_file
-            self.path_to_library_folder = os.path.dirname(self.path_to_library_file)
-            self.lib_name = os.path.basename(self.path_to_library_file)
+            self.path_to_library_folder = self.path_to_library_file.parent[0]
+            self.lib_name = self.path_to_library_file.name
 
         if path_to_music_folder != None:
             self.path_to_music_folder = path_to_music_folder
@@ -489,9 +481,7 @@ class LibScan:
         if path_to_library_file != None:
             self.path_to_library_file = path_to_library_file
 
-            self.path_to_playlists_folder = os.path.join(
-                self.path_to_dest_folder, f"{self.lib_name}_Playlists"
-            )
+            self.path_to_playlists_folder = self.path_to_dest_folder/f"{self.lib_name}_Playlists"
 
             if f"{self.lib_name}_Playlists" not in os.listdir(self.path_to_dest_folder):
                 os.mkdir(self.path_to_playlists_folder)
@@ -506,24 +496,22 @@ class LibScan:
             try:
                 self.df_lib.loc[:, "Album Location"] = self.df_lib.loc[
                     :, "Location"
-                ].apply(lambda x: os.path.dirname(x))
+                ].apply(lambda x: x.parent[0])
 
                 self.album_paths = sorted(set(self.df_lib.loc[:, "Album Location"]))
             except:
-                print("Something is wrong with albuim locations")
+                logging.error("Something is wrong with albuim locations")
         else:
             self.lib_lib = None
             self.df_lib = pd.DataFrame([])
-            self.path_to_playlists_folder = os.path.join(
-                path_to_music_folder, f"Playlists"
-            )
+            self.path_to_playlists_folder = path_to_music_folder/f"Playlists"
 
             if f"Playlists" not in os.listdir(path_to_music_folder):
                 os.mkdir(self.path_to_playlists_folder)
 
         if path_to_music_folder != None and not skip_scanning:
 
-            print(" ! Warning this part is going to modify your music files !")
+            logging.warning(" ! Warning this part is going to modify your music files !")
 
             self.df_lib_scanned = get_scanned_df(
                 path_to_music_folder,
@@ -546,10 +534,8 @@ class LibScan:
             self.df_lib, lib_lib=self.lib_lib, path_to_lib=self.path_to_dest_folder
         )
 
-        self.df_cd.to_csv(
-            os.path.join(self.path_to_dest_folder, f"{self.lib_name}_CDs.csv")
-        )
-
+        self.df_cd.to_csv(self.path_to_dest_folder/f"{self.lib_name}_CDs.csv")
+        
     def get_all_playlists_from_a_lib(self):
         """_summary_
 
@@ -560,8 +546,7 @@ class LibScan:
         """
         if self.lib_lib != None:
             for playlist in self.lib_lib.playlists:
-                # if '*' in  playlist.itunesAttributes['Name']:
-                # print("PL ", playlist.itunesAttributes['Name'])
+
                 PL_to_m3u8(self.path_to_playlists_folder, playlist)
 
     def get_all_playlists_with_alternative_path(self, new_root_folder):
@@ -589,8 +574,7 @@ class LibScan:
 
         df = pd.merge(df, grouped_df, on="Album Location", how="left")
 
-        grouped_df[grouped_df["Number of Album in Location"] > 1].to_csv(
-            os.path.join(self.path_to_dest_folder, "locations_with_multiple_album.csv"),
+        grouped_df[grouped_df["Number of Album in Location"] > 1].to_csv(self.path_to_dest_folder/"locations_with_multiple_album.csv",
             index=False,
         )
 
@@ -714,7 +698,7 @@ class LibScan:
 
         PL_folder_name = f"split_{maximum_size_feature}_{split_type}"
 
-        path_to_pl = os.path.join(self.path_to_dest_folder, PL_folder_name)
+        path_to_pl = self.path_to_dest_folder/PL_folder_name
 
         if PL_folder_name not in os.listdir(self.path_to_dest_folder):
             os.mkdir(path_to_pl)
@@ -738,9 +722,7 @@ class LibScan:
 
         for pl_name in all_sorted_df.loc[:, "PL Name"].unique():
 
-            lib_df[lib_df.loc[:, "PL Name"] == pl_name].to_csv(
-                os.path.join(path_to_pl, f"{pl_name}.csv")
-            )
+            lib_df[lib_df.loc[:, "PL Name"] == pl_name].to_csv(path_to_pl/"{pl_name}.csv")
 
             df_to_m3u8(lib_df[lib_df.loc[:, "PL Name"] == pl_name], pl_name, path_to_pl)
 
@@ -773,9 +755,8 @@ class LibScan:
             ),
             0,
         )
-        path_to_pl = os.path.join(
-            self.path_to_dest_folder, audio_location.replace("/", "_") + "_PL"
-        )
+        path_to_pl = self.path_to_dest_folder/(audio_location.replace("/", "_") + "_PL")
+        
 
         if audio_location.replace("/", "_") + "_PL" not in os.listdir(
             self.path_to_dest_folder
@@ -784,7 +765,6 @@ class LibScan:
 
         for pl_name in lib_df.loc[:, "pl_name"].unique():
             if pl_name != 0:
-                print(pl_name.replace(" ", "_"))
                 if len(lib_df[lib_df.pl_name == pl_name]) > 1:
                     df_to_m3u8(
                         lib_df[lib_df.pl_name == pl_name],
@@ -794,7 +774,7 @@ class LibScan:
 
     def split_lib_by_resolution(self, resolutions=[128, 192, 256, 320, 1000]):
 
-        path_to_pl = os.path.join(self.path_to_dest_folder, "PL_by_Resolution")
+        path_to_pl = self.path_to_dest_folder/"PL_by_Resolution"
         if "PL_by_Resolution" not in os.listdir(self.path_to_dest_folder):
             os.mkdir(path_to_pl)
 
@@ -812,7 +792,7 @@ class LibScan:
         df_to_m3u8(df_temp, file_name, path_to_pl)
 
     def split_lib_by_format(self):
-        path_to_pl = os.path.join(self.path_to_dest_folder, "PL_by_Format")
+        path_to_pl = self.path_to_dest_folder/"PL_by_Format"
         if "PL_by_Format" not in os.listdir(self.path_to_dest_folder):
             os.mkdir(path_to_pl)
         for format in self.df_lib["CD Files Kind"].unique():

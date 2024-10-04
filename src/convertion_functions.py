@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import xml.etree.ElementTree as ET  ## XML parsing
+from pathlib import Path
 
 from urllib.parse import unquote
 
@@ -15,14 +16,14 @@ norm = "NFC"
 def convert_playlists(
     path_to_playlists,
     destination_folder="Playlists_WM",
-    iTunes_lib_path="",
-    walkman_lib_path="",
+    iTunes_lib_path=Path(),
+    walkman_lib_path=Path(),
 ):
 
     if destination_folder not in os.listdir(path_to_playlists):
-        os.mkdir(os.path.join(path_to_playlists, destination_folder))
+        os.mkdir(path_to_playlists/destination_folder)
 
-    destination_path = os.path.join(path_to_playlists, destination_folder)
+    destination_path = path_to_playlists/destination_folder
 
     files_list = [
         f
@@ -32,15 +33,15 @@ def convert_playlists(
 
     for file_name in files_list:
 
-        playlist_file = open(os.path.join(path_to_playlists, file_name))
+        playlist_file = open(path_to_playlists/file_name)
         lines = playlist_file.readlines()
         playlist_file.close()
 
         target_file_name = file_name
-        f = open(os.path.join(destination_path, target_file_name), "w")
+        f = open(destination_path/target_file_name, "w")
 
         for line in lines:
-            line = str(os.path.join(walkman_lib_path, line.split(iTunes_lib_path)[-1]))
+            line = str(walkman_lib_path/line.split(iTunes_lib_path)[-1])
             f.write((unicodedata.normalize(norm, line).encode("utf-8")).decode("utf-8"))
 
         f.close()
@@ -57,7 +58,7 @@ def m3u8_to_csv(path_to_playlist, playlist_name):
         _type_: _description_
     """
 
-    file1 = open(os.parth.join(path_to_playlist, playlist_name), "r")
+    file1 = open(path_to_playlist/playlist_name, "r")
     count = 0
 
     # Using for loop
@@ -101,7 +102,7 @@ def m3u8_to_csv(path_to_playlist, playlist_name):
     )
 
     df.loc[:, "Location"] = df.loc[:, "Location"].apply(lambda x: unquote(x))
-    df.to_csv(os.parth.join(path_to_playlist, playlist_name.replace("m3u8", "csv")))
+    df.to_csv(path_to_playlist/playlist_name.replace("m3u8", "csv"))
 
     return df
 
@@ -118,7 +119,7 @@ def df_to_m3u8(df, file_name, path_to_m3u8_folder):
     if not file_name.endswith(".m3u8"):
         file_name += ".m3u8"
 
-    f = open(os.path.join(path_to_m3u8_folder, file_name), "w+")
+    f = open(path_to_m3u8_folder/file_name, "w+")
     f.write(f"#EXTM3U\r\n")
 
     for i, row in df.iterrows():
@@ -153,7 +154,7 @@ def PL_to_m3u8(
     if file_name in os.listdir():
         file_name = f"{playlist.itunesAttributes['Name']} -  {playlist.itunesAttributes['Playlist ID']}.m3u"
 
-    f = open(os.path.join(path_to_playlists_folder, file_name), "w+")
+    f = open(path_to_playlists_folder/ file_name, "w+")
     f.write(f"#EXTM3U\r\n")
 
     total_time_list = []
@@ -196,5 +197,4 @@ def PL_to_m3u8(
         }
     )
     df.loc[:, "Location"] = df.loc[:, "Location"].apply(lambda x: unquote(x))
-    # df.to_csv(os.parth.join(path_to_playlist,playlist_name.replace('m3u8','csv')))
     return df

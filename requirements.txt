@@ -3,3 +3,4 @@ numpy
 music_tag
 itunesLibrary
 pytest
+pillow

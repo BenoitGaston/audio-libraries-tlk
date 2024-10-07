@@ -6,7 +6,17 @@ from itunes_lib_scan import LibScan
 
 #
 
-lib_location = os.getcwd().parent[0]/ "itunes-lib-data"
+
+
+
+
+
+
+
+
+
+
+lib_location = Path(os.getcwd()).parent/ "itunes-lib-data"
 lib_name = "iTunes Music Library-2024-05-24"
 path_to_dest_folder = lib_location
 sd_walkman_path = "/Volumes/MasterAudio/NewiTunes/iTunes Media/Music"
@@ -36,6 +46,13 @@ LS = LibScan(
     skip_scanning=skip_scanning,
 )
 
+        self.df_lib = get_lib_as_csv(
+            self.path_to_library_folder, self.lib_name, self.path_to_dest_folder
+        )
+
+
+        self.df_lib_scanned = get_scanned_df(path_to_music_folder,force_scan,
+        )
 
 LS.get_all_playlists_from_a_lib()
 LS.get_all_playlists_with_alternative_path(new_root_folder=new_root_folder)

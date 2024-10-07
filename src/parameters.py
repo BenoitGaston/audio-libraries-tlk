@@ -1,3 +1,20 @@
+music_extentions = [
+    ".aac",
+    ".aiff",
+    ".dsf",
+    ".flac",
+    ".m4a",
+    ".mp3",
+    ".ogg",
+    ".opus",
+    ".wav",
+    ".wv",
+]
+
+image_extentions = [".jpg", ".jpeg", ".png"]
+
+playlist_extensions = [".m3u8"]
+
 tag_keys = [
     "album",
     "albumartist",
@@ -47,11 +64,15 @@ important_cols = [
 
 
 tags_to_itunes_cols_dict = {
+    "albumartist" : "Album Artist",
+    "discnumber" : "Disc Number",
     "Total Discs": "Disc Count",
     "Total Tracks": "Track Count",
     "Track Title": "Name",
     "length": "Total Time",
     "codec": "Kind",
+    'samplerat':'Sample Rate',
+    "bitrate":"Bit Rate",
 }
 
 itunes_cols = [

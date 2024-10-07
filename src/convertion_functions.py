@@ -7,47 +7,42 @@ from urllib.parse import unquote
 
 import os
 import unicodedata
+import logging
+from pathlib import Path
 
 
 # the possible norms ar ‘NFC’, ‘NFKC’, ‘NFD’, and ‘NFKD’.
 norm = "NFC"
 
 
-def convert_playlists(
-    path_to_playlists,
-    destination_folder="Playlists_WM",
-    iTunes_lib_path=Path(),
-    walkman_lib_path=Path(),
-):
-
-    if destination_folder not in os.listdir(path_to_playlists):
-        os.mkdir(path_to_playlists/destination_folder)
-
-    destination_path = path_to_playlists/destination_folder
-
-    files_list = [
-        f
-        for f in os.listdir(path_to_playlists)
-        if (f.endswith(".m3u8") and not f.startswith("._"))
-    ]
-
-    for file_name in files_list:
-
-        playlist_file = open(path_to_playlists/file_name)
-        lines = playlist_file.readlines()
-        playlist_file.close()
-
-        target_file_name = file_name
-        f = open(destination_path/target_file_name, "w")
-
-        for line in lines:
-            line = str(walkman_lib_path/line.split(iTunes_lib_path)[-1])
-            f.write((unicodedata.normalize(norm, line).encode("utf-8")).decode("utf-8"))
-
-        f.close()
 
 
-def m3u8_to_csv(path_to_playlist, playlist_name):
+        
+
+def convert_a_playlist(path_to_playlist_folder,
+                       path_to_destination_folder,
+                       orginal_path,
+                       updated_path,
+                       file_name):
+
+    playlist_file = open(path_to_playlist_folder/file_name)
+    lines = playlist_file.readlines()
+    playlist_file.close()
+
+    target_file_name = file_name
+    f = open(path_to_destination_folder/target_file_name, "w")
+
+    for line in lines:
+        line = str(updated_path/line.split(orginal_path)[-1])
+        f.write((unicodedata.normalize(norm, line).encode("utf-8")).decode("utf-8"))
+
+    f.close()
+
+
+
+
+def m3u8_to_csv(path_to_playlist, 
+                playlist_name):
     """_summary_
 
     Args:
@@ -61,8 +56,6 @@ def m3u8_to_csv(path_to_playlist, playlist_name):
     file1 = open(path_to_playlist/playlist_name, "r")
     count = 0
 
-    # Using for loop
-    print("Using for loop")
     duration_list = []
     title_list = []
     artist_list = []
@@ -80,13 +73,12 @@ def m3u8_to_csv(path_to_playlist, playlist_name):
             artist = line_strip.split(" - ")[1]
 
             count += 1
-            print(duration, title, artist)
+
             duration_list.append(duration)
             title_list.append(title)
             artist_list.append(artist)
         elif not line_strip.startswith("#EXT"):
             location = line.strip()
-            print(location.replace(" ", "%20"))
             location_list.append(location)
 
     # Closing files
@@ -122,9 +114,8 @@ def df_to_m3u8(df, file_name, path_to_m3u8_folder):
     f = open(path_to_m3u8_folder/file_name, "w+")
     f.write(f"#EXTM3U\r\n")
 
-    for i, row in df.iterrows():
+    for _, row in df.iterrows():
 
-        # try:
         total_time = row["Total Time"]
         name = row["Name"]
         artist = row["Artist"]
@@ -132,8 +123,7 @@ def df_to_m3u8(df, file_name, path_to_m3u8_folder):
 
         f.write(f"#EXTINF:{round(int(total_time)/1000)} ,{name} - {artist}\r\n")
         f.write(f"{unquote(location)}\r\n".replace("%20", " "))
-        # except:
-        #    print(row)
+
     f.close()
 
 
@@ -183,8 +173,6 @@ def PL_to_m3u8(
 
         f.write(f"#EXTINF:{round(int(total_time)/1000)} ,{name} - {artist}\r\n")
         f.write(f"{location}\r\n".replace("%20", " "))
-        # except:
-        #    print(item)
 
     f.close()
 

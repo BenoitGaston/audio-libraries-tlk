@@ -1,0 +1,368 @@
+from convertion_functions import df_to_m3u8, convert_a_playlist
+import parameters as param
+import numpy as np
+
+import pandas as pd
+import os
+
+
+def group_by_cd(x):
+    """_summary_
+
+    Args:
+        x (_type_): _description_
+    """
+    try:
+        total_duration = np.sum(x["Total Time"])
+    except:
+        total_duration = -1
+    try:
+        size = sum(x["Size"].astype(int))
+    except:
+        size = -1
+
+    mean_bit_rate = np.mean(x["Bit Rate"].astype(int))
+    num_track = len(x)
+    min_track = np.min(x["Track Number"])
+    max_track = np.max(x["Track Number"])
+    min_rating = np.min(x["Rating"])
+    max_rating = np.max(x["Rating"])
+    avg_rating = np.mean(x["Rating"])
+    track_num_delta = max_track + 1 - min_track
+    all_track_present = track_num_delta == num_track
+    album_type = x.Kind.mode()[0]
+
+    album_location = x["Album Location"].mode()[0]
+    album_multi_location = len(x["Album Location"].unique()) > 0
+
+    return pd.Series(
+        {
+            "CD Total Time": total_duration,
+            "CD Size": size,
+            "CD Rating Min": min_rating,
+            "CD Rating Max": max_rating,
+            "CD Rating AVG": avg_rating,
+            "CD Bit Rate": mean_bit_rate,
+            "CD Files Kind": album_type,
+            "CD Location": album_location,
+            "CD Has Multiple Locations": album_multi_location,
+            "Num Tracks": num_track,
+            "Min Track Number": min_track,
+            "Max Track Number": max_track,
+            "Track Number Delta": track_num_delta,
+            "All Track Present": all_track_present,
+        }
+    )
+
+
+class LibraryProcessing:
+
+    def __init__(self,
+                 df_lib,
+                 path_to_playlist_folder):
+         
+        self.df_lib = df_lib
+        self.path_to_playlist_folder = path_to_playlist_folder
+        
+
+    def convert_playlists_with_new_path(
+        self,
+        destination_folder="Playlists_updated",
+        orginal_path=Path('.'),
+        updated_path=Path('.'),
+    ):
+
+        if destination_folder not in os.listdir(self.path_to_playlist_folder):
+            os.mkdir(self.path_to_playlist_folder/destination_folder)
+
+        destination_path = self.path_to_playlist_folder/destination_folder
+
+        files_list = [
+            f
+            for f in os.listdir(self.path_to_playlist_folder)
+            if (f.endswith(".m3u8") and not f.startswith("._"))
+        ]
+
+        for file_name in files_list:
+             
+             convert_a_playlist(path_to_playlist_folder=self.path_to_playlist_folder,
+                                path_to_destination_folder=destination_path,
+                                orginal_path=orginal_path,
+                                updated_path=updated_path,
+                                file_name=file_name,)
+             
+
+    def get_cd_df(
+        self
+    ):
+        """_summary_
+
+        Args:
+            path_to_lib (_type_): _description_
+            lib_name (_type_): _description_
+            pl_list (list, optional): _description_. Defaults to ['*', '**', '*** 1', '**** 1', '***** 1'].
+
+        Returns:
+            _type_: _description_
+        """
+        df_lib = self.df_lib.copy()
+        df_lib.loc[:, "Album"] = df_lib["Album"].apply(lambda x: str(x).strip())
+        df_lib.loc[:, "Album Artist"] = df_lib["Album Artist"].apply(
+            lambda x: str(x).strip()
+        )
+
+        group_features = [
+            "Album",
+            "Album Artist",
+            "Disc Number",
+            "Genre",
+            "Disc Count",
+        ]
+
+        grouped_df = df_lib.groupby(by=group_features).apply(group_by_cd).reset_index()
+
+        # grouped_df.loc[:,'cumsum_time'] = np.cumsum((grouped_df.loc[:,'Total Time']/1000)/(4*60*60))
+
+        df_lib = df_lib.merge(grouped_df, on=group_features)
+
+        return df_lib, grouped_df
+
+
+
+    def get_locations_with_multiple_album(self):
+
+        def group_by_location(x):
+
+            return pd.Series({"Number of Album in Location": len(x.Album.unique())})
+
+        df = self.df_lib.copy()
+
+        grouped_df = (
+            df.groupby(by="Album Location").apply(group_by_location).reset_index()
+        )
+
+        df = pd.merge(df, grouped_df, on="Album Location", how="left")
+
+        grouped_df[grouped_df["Number of Album in Location"] > 1].to_csv(self.path_to_dest_folder/"locations_with_multiple_album.csv",
+            index=False,
+        )
+
+    def get_albumwith_multiple_genre(self):
+
+        return 1
+
+
+    def split_lib_by_resolution(self, resolutions=[128, 192, 256, 320, 1000]):
+
+        path_to_pl = self.path_to_dest_folder/"PL_by_Resolution"
+        if "PL_by_Resolution" not in os.listdir(self.path_to_dest_folder):
+            os.mkdir(path_to_pl)
+
+        df_temp = self.df_lib.copy()
+
+        for res in sorted(resolutions):
+            df = df_temp[df_temp["CD Bit Rate"] <= res]
+            df_temp = df_temp[df_temp["CD Bit Rate"] > res]
+
+            file_name = f"up_to_{res}_kbps"
+
+            df_to_m3u8(df, file_name, path_to_pl)
+
+        file_name = f"above_{res}_kbps"
+        df_to_m3u8(df_temp, file_name, path_to_pl)
+
+    def split_lib_by_format(self):
+        path_to_pl = self.path_to_dest_folder/"PL_by_Format"
+        if "PL_by_Format" not in os.listdir(self.path_to_dest_folder):
+            os.mkdir(path_to_pl)
+        for format in self.df_lib["CD Files Kind"].unique():
+            df = self.df_lib[self.df_lib["CD Files Kind"] == format]
+            file_name = f"{format}_files"
+            df_to_m3u8(df, file_name, path_to_pl)
+
+
+    '''def split_lib_by_features(
+        self,
+        split_features=["Genre", "CD Rating AVG"],
+        maximum_size_feature="CD Size",
+        maximum_bin_size_in_hours=4,
+        maximum_bin_size_in_gb=1,
+        mix_genre=False,
+    ):
+        """_summary_
+
+        Args:
+            lib_name (_type_): _description_
+            path_to_lib_folder (_type_): _description_
+            split_type (list, optional): _description_. Defaults to ['Genre','CD Rating AVG',].
+            maximum_size_feature (str, optional): _description_. Defaults to 'CD Size'.
+            maximum_bin_size_in_hours (int, optional): _description_. Defaults to 4.
+            maximum_bin_size_in_gb (int, optional): _description_. Defaults to 1.
+        """
+
+        if not mix_genre:
+
+            split_genre = "Genre"
+
+            list_of_df_to_split = []
+
+            for genre in self.df_cd[split_genre].sort_values().unique():
+
+                list_of_df_to_split.append(
+                    self.df_cd[self.df_cd[split_genre] == genre].copy()
+                )
+        else:
+            list_of_df_to_split = [self.df_cd.copy()]
+            split_genre = "Genre"
+
+        if split_features == None:
+            split_type = "random"
+        else:
+            split_type = split_features
+
+        all_sorted_df_list = []
+        all_sorted_df = pd.DataFrame([])
+        max_pl_id = 0
+
+        for df_cd_to_split in list_of_df_to_split:
+
+            if split_type == "random":
+
+                sorted_df = df_cd_to_split.sample(frac=1)
+                split_name = "random"
+            elif type(split_type) == list:
+                sorted_df = df_cd_to_split.sample(frac=1)
+                sorted_df = sorted_df.sort_values(by=split_type)
+
+                split_name = split_type[0]
+
+                if len(split_type) > 1:
+                    for st in split_type[1:]:
+                        split_name += "_" + st
+
+                split_name += "_"
+
+            if maximum_size_feature == "CD Total Time":
+                maximum_bin_size = maximum_bin_size_in_hours * 60 * 60 * 1000
+
+            else:
+
+                maximum_bin_size = maximum_bin_size_in_gb * (1000 * 1000 * 1000)
+
+            sorted_df.loc[:, "PL Id"] = (
+                np.cumsum(
+                    (sorted_df.loc[:, maximum_size_feature]) / (maximum_bin_size)
+                ).astype(int)
+                + max_pl_id
+            )
+
+            all_sorted_df = pd.concat([all_sorted_df, sorted_df])
+
+            max_pl_id = 1 + np.max(sorted_df.loc[:, "PL Id"])
+
+        all_sorted_df.loc[:, "PL Id"] = all_sorted_df.loc[:, "PL Id"].astype(str)
+
+        def group_by_pl(x):
+            """_summary_
+
+            Args:
+                x (_type_): _description_
+
+            Returns:
+                _type_: _description_
+            """
+
+            mean_rating = round(np.mean(x["CD Rating AVG"]), 1)
+            med_genre = x[split_genre].mode()[0].replace("/", "-")
+            return pd.Series(
+                {
+                    "PL Rating": mean_rating,
+                    "PL Genre": med_genre,
+                    "PL Name": f"{med_genre}_{mean_rating}_",
+                }
+            )
+
+        # all_sorted_df = pd.concat(all_sorted_df_list)
+
+        pl_df = all_sorted_df.groupby(by="PL Id").apply(group_by_pl)
+
+        all_sorted_df = all_sorted_df.merge(pl_df, on="PL Id")
+
+        all_sorted_df.loc[:, "PL Name"] = (
+            all_sorted_df.loc[:, "PL Name"] + all_sorted_df.loc[:, "PL Id"]
+        )
+
+        PL_folder_name = f"split_{maximum_size_feature}_{split_type}"
+
+        path_to_pl = self.path_to_dest_folder/PL_folder_name
+
+        if PL_folder_name not in os.listdir(self.path_to_dest_folder):
+            os.mkdir(path_to_pl)
+
+        group_features = [
+            "Album",
+            "Album Artist",
+            "Disc Number",
+            "Genre",
+            "Disc Count",
+        ]
+
+        # grouped_df = df_lib.groupby(by=group_features).apply(group_by_cd).reset_index()
+
+        # grouped_df.loc[:,'cumsum_time'] = np.cumsum((grouped_df.loc[:,'Total Time']/1000)/(4*60*60))
+        lib_df = self.df_lib.copy()
+        lib_df = lib_df.merge(
+            all_sorted_df[group_features + ["PL Name"]], on=group_features
+        )
+
+        for pl_name in all_sorted_df.loc[:, "PL Name"].unique():
+
+            lib_df[lib_df.loc[:, "PL Name"] == pl_name].to_csv(path_to_pl/"{pl_name}.csv")
+
+            df_to_m3u8(lib_df[lib_df.loc[:, "PL Name"] == pl_name], pl_name, path_to_pl)
+
+    def split_lib_by_location(self, audio_location, level):
+        lib_df = self.df_lib.copy()
+        lib_df.dropna(subset=["Total Time"], inplace=True)
+        lib_df.loc[:, "Location_rep"] = lib_df.Location
+        lib_df.loc[:, "audio_loc_in_loc"] = lib_df.Location_rep.apply(
+            lambda x: audio_location in x
+        )
+
+        lib_df.loc[:, "level_max"] = np.where(
+            lib_df.loc[:, "audio_loc_in_loc"],
+            lib_df.Location_rep.apply(
+                lambda x: len(x.split(audio_location)[-1].split("/"))
+            ),
+            0,
+        )
+
+        lib_df.loc[:, "pl_name"] = np.where(
+            lib_df.loc[:, "audio_loc_in_loc"],
+            lib_df.Location_rep.apply(
+                lambda x: "_".join(
+                    x.split(audio_location)[-1].split("/")[
+                        0 : min(
+                            [level + 1, len(x.split(audio_location)[-1].split("/"))]
+                        )
+                    ]
+                )
+            ),
+            0,
+        )
+        path_to_pl = self.path_to_dest_folder/(audio_location.replace("/", "_") + "_PL")
+        
+
+        if audio_location.replace("/", "_") + "_PL" not in os.listdir(
+            self.path_to_dest_folder
+        ):
+            os.mkdir(path_to_pl)
+
+        for pl_name in lib_df.loc[:, "pl_name"].unique():
+            if pl_name != 0:
+                if len(lib_df[lib_df.pl_name == pl_name]) > 1:
+                    df_to_m3u8(
+                        lib_df[lib_df.pl_name == pl_name],
+                        pl_name.replace(" ", "_"),
+                        path_to_pl,
+                    )'''

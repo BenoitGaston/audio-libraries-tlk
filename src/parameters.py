@@ -68,12 +68,17 @@ tags_to_itunes_cols_dict = {
     "discnumber" : "Disc Number",
     "Total Discs": "Disc Count",
     "Total Tracks": "Track Count",
+    "tracknumber" : "Track Number",
     "Track Title": "Name",
     "length": "Total Time",
     "codec": "Kind",
     'samplerat':'Sample Rate',
     "bitrate":"Bit Rate",
 }
+
+'Channels', 'Bitspersample', 'Samplerat',
+       'Location', 'Album location'],
+
 
 itunes_cols = [
     "Track ID",

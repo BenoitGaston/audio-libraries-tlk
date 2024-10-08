@@ -61,7 +61,7 @@ class iTunesLibraryScan:
 
         pkl_name = self.lib_name.replace('.xml','.pickle')
 
-        print(os.listdir(self.path_to_dest_folder))
+
 
         if pkl_name in os.listdir(self.path_to_dest_folder):
 
@@ -70,7 +70,7 @@ class iTunesLibraryScan:
                 lib = pickle.load(handle)
         else:
             # must first parse...
-            print('Picjle not found !!!')
+
             logging.info(f"! Be Patient. Parsing your {self.lib_name} will take a long time (~60mins for a 30k songs lib with a Mac mini M2) !"
             )
             lib = library.parse(self.path_to_library_file)
@@ -156,6 +156,7 @@ class iTunesLibraryScan:
             "Track ID",
             "Track Number",
             "Year",
+            "Total Time"
         ]
         logging.info(f'Shape of your Lib Data {df.shape}')
         logging.info(f'Columns of your Lib csv {df.columns}')
@@ -174,7 +175,7 @@ class iTunesLibraryScan:
 
         df["Play Date"] = pd.to_datetime(df["Play Date"] - 2082826800, unit="s")
 
-        df.loc[:, "Total Time"] = df["Total Time"].apply(pd.to_numeric)
+ 
         # df.loc[:,'Total Time'] = pd.to_timedelta(df['Total Time'], unit='ms')
 
         usefull_cols = [
@@ -223,7 +224,7 @@ class iTunesLibraryScan:
             col for col in df.columns if col not in usefull_cols
         ]
 
-        df[["Album Rating","Rating"]] = df[["Album Rating","Rating"]].fillna(0)
+        df[["Album Rating","Rating","Bit Rate"]] = df[["Album Rating","Rating","Bit Rate"]].fillna(0)
         # df.loc[:,'Location'] = df.loc[:,'Location'].apply(lambda x : unquote(x))
         df[all_cols].to_csv(self.path_to_dest_folder/self.lib_name.replace('.xml','.csv'),index=False)
         

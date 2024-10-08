@@ -158,6 +158,8 @@ class EditCoverArtwork():
 
             if is_any_cover_image:
 
+                image_files_paths = get_image_files_paths(path_to_album)
+
                 image_file_path = image_files_paths[0]
 
                 if self.create_cover_jpg:

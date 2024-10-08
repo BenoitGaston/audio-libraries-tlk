@@ -33,7 +33,10 @@ def convert_a_playlist(path_to_playlist_folder,
     f = open(path_to_destination_folder/target_file_name, "w")
 
     for line in lines:
-        line = str(updated_path/line.split(orginal_path)[-1])
+        if not(line.startswith('#EXTINF:') 
+               or line.startswith('#EXTM3U')):
+
+            line = str(line.replace(orginal_path,updated_path))
         f.write((unicodedata.normalize(norm, line).encode("utf-8")).decode("utf-8"))
 
     f.close()
@@ -119,7 +122,7 @@ def df_to_m3u8(df, file_name, path_to_m3u8_folder):
         total_time = row["Total Time"]
         name = row["Name"]
         artist = row["Artist"]
-        location = row["Location"]
+        location = str(row["Location"])
 
         f.write(f"#EXTINF:{round(int(total_time)/1000)} ,{name} - {artist}\r\n")
         f.write(f"{unquote(location)}\r\n".replace("%20", " "))

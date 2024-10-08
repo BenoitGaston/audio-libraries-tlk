@@ -16,28 +16,28 @@ image_extentions = [".jpg", ".jpeg", ".png"]
 playlist_extensions = [".m3u8"]
 
 tag_keys = [
-    "album",
-    "albumartist",
-    "artist",
-    "artwork",
-    "comment",
-    "compilation",
-    "composer",
-    "discnumber",
-    "genre",
-    "lyrics",
-    "totaldiscs",
-    "totaltracks",
-    "tracknumber",
-    "tracktitle",
-    "year",
-    "isrc",
-    "bitrate",
-    "codec",
-    "length",
-    "channels",
-    "bitspersample",
-    "samplerat",
+    "Album",
+    "Album Artist",
+    "Artist",
+    "Artwork",
+    "Comment",
+    "Compilation",
+    "Composer",
+    "Disc Number",
+    "Genre",
+    "Lyrics",
+    "Total Discs",
+    "Total Tracks",
+    "Track Number",
+    "Track Title",
+    "Year",
+    "Isrc",
+    "#Bit Rate",
+    "#Codec",
+    "#Length",
+    "#Channels",
+    "#Bits Per Sample",
+    "#Sample Rate",
 ]
 
 important_cols = [
@@ -64,17 +64,11 @@ important_cols = [
 
 
 tags_to_itunes_cols_dict = {
-    "albumartist" : "Album Artist",
-    "discnumber" : "Disc Number",
-    "totaldiscs": "Disc Count",
-    "totaltracks": "Track Count",
-    "tracknumber" : "Track Number",
-    "tracktitle": "Name",
-    "length": "Total Time",
-    "codec": "Kind",
-    'samplerat':'Sample Rate',
-    "bitrate":"Bit Rate",
-}
+    "Total Discs": "Disc Count",
+    "Total Tracks": "Track Count",
+    "Track Title": "Name",
+    "#Length": 'Total Time',
+    "#Codec": 'Kind'}
 
 
 itunes_cols = [

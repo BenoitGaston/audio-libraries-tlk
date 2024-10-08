@@ -2,7 +2,7 @@ import pytest
 from pathlib import Path
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../src")
+sys.path.append('../src')
 import src.lib_scan as ls
 
 

@@ -67,8 +67,9 @@ tags_to_itunes_cols_dict = {
     "Total Discs": "Disc Count",
     "Total Tracks": "Track Count",
     "Track Title": "Name",
-    "#Length": 'Total Time',
-    "#Codec": 'Kind'}
+    "#Length": "Total Time",
+    "#Codec": "Kind",
+}
 
 
 itunes_cols = [

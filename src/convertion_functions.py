@@ -15,37 +15,31 @@ from pathlib import Path
 norm = "NFC"
 
 
+def convert_a_playlist(
+    path_to_playlist_folder,
+    path_to_destination_folder,
+    orginal_path,
+    updated_path,
+    file_name,
+):
 
-
-        
-
-def convert_a_playlist(path_to_playlist_folder,
-                       path_to_destination_folder,
-                       orginal_path,
-                       updated_path,
-                       file_name):
-
-    playlist_file = open(path_to_playlist_folder/file_name)
+    playlist_file = open(path_to_playlist_folder / file_name)
     lines = playlist_file.readlines()
     playlist_file.close()
 
     target_file_name = file_name
-    f = open(path_to_destination_folder/target_file_name, "w")
+    f = open(path_to_destination_folder / target_file_name, "w")
 
     for line in lines:
-        if not(line.startswith('#EXTINF:') 
-               or line.startswith('#EXTM3U')):
+        if not (line.startswith("#EXTINF:") or line.startswith("#EXTM3U")):
 
-            line = str(line.replace(orginal_path,updated_path))
+            line = str(line.replace(orginal_path, updated_path))
         f.write((unicodedata.normalize(norm, line).encode("utf-8")).decode("utf-8"))
 
     f.close()
 
 
-
-
-def m3u8_to_csv(path_to_playlist, 
-                playlist_name):
+def m3u8_to_csv(path_to_playlist, playlist_name):
     """_summary_
 
     Args:
@@ -56,7 +50,7 @@ def m3u8_to_csv(path_to_playlist,
         _type_: _description_
     """
 
-    file1 = open(path_to_playlist/playlist_name, "r")
+    file1 = open(path_to_playlist / playlist_name, "r")
     count = 0
 
     duration_list = []
@@ -97,7 +91,7 @@ def m3u8_to_csv(path_to_playlist,
     )
 
     df.loc[:, "Location"] = df.loc[:, "Location"].apply(lambda x: unquote(x))
-    df.to_csv(path_to_playlist/playlist_name.replace("m3u8", "csv"))
+    df.to_csv(path_to_playlist / playlist_name.replace("m3u8", "csv"))
 
     return df
 
@@ -114,7 +108,7 @@ def df_to_m3u8(df, file_name, path_to_m3u8_folder):
     if not file_name.endswith(".m3u8"):
         file_name += ".m3u8"
 
-    f = open(path_to_m3u8_folder/file_name, "w+")
+    f = open(path_to_m3u8_folder / file_name, "w+")
     f.write(f"#EXTM3U\r\n")
 
     for _, row in df.iterrows():
@@ -147,7 +141,7 @@ def PL_to_m3u8(
     if file_name in os.listdir():
         file_name = f"{playlist.itunesAttributes['Name']} -  {playlist.itunesAttributes['Playlist ID']}.m3u"
 
-    f = open(path_to_playlists_folder/ file_name, "w+")
+    f = open(path_to_playlists_folder / file_name, "w+")
     f.write(f"#EXTM3U\r\n")
 
     total_time_list = []

@@ -37,8 +37,8 @@ def group_by_cd(x):
     track_num_delta = max_track + 1 - min_track
     all_track_present = track_num_delta == num_track
     album_type = x.Kind.mode()[0]
-    album_genre =  x.Genre.mode()[0]
-    album_multi_genre =len(x["Genre"].unique()) > 1
+    album_genre = x.Genre.mode()[0]
+    album_multi_genre = len(x["Genre"].unique()) > 1
 
     album_location = x["Album Location"].mode()[0]
     album_multi_location = len(x["Album Location"].unique()) > 1
@@ -54,8 +54,8 @@ def group_by_cd(x):
             "CD Files Kind": album_type,
             "CD Location": album_location,
             "CD Has Multiple Locations": album_multi_location,
-            "CD Genre":album_genre,
-            "CD Has Multiple Genre":album_multi_genre,
+            "CD Genre": album_genre,
+            "CD Has Multiple Genre": album_multi_genre,
             "Num Tracks": num_track,
             "Min Track Number": min_track,
             "Max Track Number": max_track,
@@ -67,27 +67,22 @@ def group_by_cd(x):
 
 class LibraryProcessing:
 
-    def __init__(self,
-                 df_lib,
-                 path_to_playlist_folder):
-         
+    def __init__(self, df_lib, path_to_playlist_folder):
+
         self.df_lib = df_lib
         self.path_to_playlist_folder = path_to_playlist_folder
-
-        
-        
 
     def convert_playlists_with_new_path(
         self,
         destination_folder="Converted_Playlists",
-        orginal_path=Path('file:///Volumes/MasterAudio/Audio/Gros iTunes/'),
-        updated_path=Path('/path/to/my/mobile/player/'),
+        orginal_path=Path("file:///Volumes/MasterAudio/Audio/Gros iTunes/"),
+        updated_path=Path("/path/to/my/mobile/player/"),
     ):
 
         if destination_folder not in os.listdir(self.path_to_playlist_folder):
-            os.mkdir(self.path_to_playlist_folder/destination_folder)
+            os.mkdir(self.path_to_playlist_folder / destination_folder)
 
-        destination_path = self.path_to_playlist_folder/destination_folder
+        destination_path = self.path_to_playlist_folder / destination_folder
 
         files_list = [
             f
@@ -96,15 +91,17 @@ class LibraryProcessing:
         ]
 
         for file_name in files_list:
-             
-             convert_a_playlist(path_to_playlist_folder=self.path_to_playlist_folder,
-                                path_to_destination_folder=destination_path,
-                                orginal_path=orginal_path,
-                                updated_path=updated_path,
-                                file_name=file_name,)
-             
+
+            convert_a_playlist(
+                path_to_playlist_folder=self.path_to_playlist_folder,
+                path_to_destination_folder=destination_path,
+                orginal_path=orginal_path,
+                updated_path=updated_path,
+                file_name=file_name,
+            )
+
     def get_special_playlists(self):
-        path_to_pl = self.path_to_playlist_folder/"Special_Playlists"
+        path_to_pl = self.path_to_playlist_folder / "Special_Playlists"
         if "Special_Playlists" not in os.listdir(self.path_to_playlist_folder):
             os.mkdir(path_to_pl)
         self.get_album_and_disc_df()
@@ -114,12 +111,7 @@ class LibraryProcessing:
         self.split_library_by_resolution()
         self.split_library_by_format()
 
-             
-
-    def get_grouped_df(
-        self,
-        disc_or_album='Album'
-    ):
+    def get_grouped_df(self, disc_or_album="Album"):
         """_summary_
 
         Args:
@@ -135,30 +127,41 @@ class LibraryProcessing:
             lambda x: str(x).strip()
         )
 
-        df_lib.loc[:,'Track Number'] = df_lib.loc[:,'Track Number'].fillna(0)
-        df_lib.loc[:,'Track Number'] = df_lib.loc[:,'Track Number'].replace('',0)
-        df_lib.loc[:,'Track Number'] = df_lib.loc[:,'Track Number'].astype(int)
+        df_lib.loc[:, "Track Number"] = df_lib.loc[:, "Track Number"].fillna(0)
+        df_lib.loc[:, "Track Number"] = df_lib.loc[:, "Track Number"].replace("", 0)
+        df_lib.loc[:, "Track Number"] = df_lib.loc[:, "Track Number"].astype(int)
 
-        group_features = ["Album",
-                        "Album Artist",]
-        if disc_or_album == 'Disc':
-            group_features.append('Disc Number')
+        group_features = [
+            "Album",
+            "Album Artist",
+        ]
+        if disc_or_album == "Disc":
+            group_features.append("Disc Number")
 
         grouped_df = df_lib.groupby(by=group_features).apply(group_by_cd).reset_index()
-        grouped_df.rename(columns = { col : col.replace('CD',disc_or_album) for col in grouped_df.columns},inplace=True)
+        grouped_df.rename(
+            columns={
+                col: col.replace("CD", disc_or_album) for col in grouped_df.columns
+            },
+            inplace=True,
+        )
 
         # grouped_df.loc[:,'cumsum_time'] = np.cumsum((grouped_df.loc[:,'Total Time']/1000)/(4*60*60))
 
-        self.df_lib = df_lib[group_features+[col for col in df_lib.columns if col not in  grouped_df.columns]].merge(grouped_df, on=group_features)
-        grouped_df.to_csv(self.path_to_playlist_folder/f'Special_Playlists/{disc_or_album}.csv')
+        self.df_lib = df_lib[
+            group_features
+            + [col for col in df_lib.columns if col not in grouped_df.columns]
+        ].merge(grouped_df, on=group_features)
+        grouped_df.to_csv(
+            self.path_to_playlist_folder / f"Special_Playlists/{disc_or_album}.csv"
+        )
 
         return grouped_df
 
     def get_album_and_disc_df(self):
 
-        self.album_df = self.get_grouped_df(disc_or_album='Album')
-        self.disc_df = self.get_grouped_df(disc_or_album='Disc')
-
+        self.album_df = self.get_grouped_df(disc_or_album="Album")
+        self.disc_df = self.get_grouped_df(disc_or_album="Disc")
 
     def get_locations_with_multiple_album(self):
 
@@ -174,52 +177,56 @@ class LibraryProcessing:
 
         df = pd.merge(df, grouped_df, on="Album Location", how="left")
 
-        grouped_df[grouped_df["Number of Album in Location"] > 1].to_csv(self.path_to_playlist_folder/"Special_Playlists/Locations_with_multiple_albums.csv",
-                                                                         index=False,)
-        
-        df_to_m3u8(df[df["Number of Album in Location"]> 1], 
-                      'Locations_with_multiple_albums', 
-                      self.path_to_playlist_folder)
+        grouped_df[grouped_df["Number of Album in Location"] > 1].to_csv(
+            self.path_to_playlist_folder
+            / "Special_Playlists/Locations_with_multiple_albums.csv",
+            index=False,
+        )
 
-    def get_disc_or_album_with_multiple_values(self,
-                                      disc_or_album='Album',
-                                      feature='Has Multiple Genre'
-                                      ):
-        
-        if  disc_or_album=='Album':
+        df_to_m3u8(
+            df[df["Number of Album in Location"] > 1],
+            "Locations_with_multiple_albums",
+            self.path_to_playlist_folder,
+        )
 
-            df_grouped  = self.album_df.copy()
+    def get_disc_or_album_with_multiple_values(
+        self, disc_or_album="Album", feature="Has Multiple Genre"
+    ):
+
+        if disc_or_album == "Album":
+
+            df_grouped = self.album_df.copy()
         else:
-            df_grouped  = self.disc_df.copy()
+            df_grouped = self.disc_df.copy()
 
-        df_grouped = df_grouped[df_grouped[f'{disc_or_album} {feature}']]
+        df_grouped = df_grouped[df_grouped[f"{disc_or_album} {feature}"]]
 
-        df_grouped.to_csv(self.path_to_playlist_folder/f'Special_Playlists/{disc_or_album} {feature}.csv',
-                                                                         index=False,)
-        
+        df_grouped.to_csv(
+            self.path_to_playlist_folder
+            / f"Special_Playlists/{disc_or_album} {feature}.csv",
+            index=False,
+        )
+
         df = self.df_lib.copy()
-        df = df[df[f'{disc_or_album} {feature}']]
+        df = df[df[f"{disc_or_album} {feature}"]]
 
-        
-        df_to_m3u8(df, 
-                   f'{disc_or_album} {feature}', 
-                self.path_to_playlist_folder)
-        
+        df_to_m3u8(df, f"{disc_or_album} {feature}", self.path_to_playlist_folder)
+
     def get_disc_with_missing_tracks(self):
 
-        self.get_disc_or_album_with_multiple_values(disc_or_album='Disc',
-                                      feature='Is Missing Tracks')
-
+        self.get_disc_or_album_with_multiple_values(
+            disc_or_album="Disc", feature="Is Missing Tracks"
+        )
 
     def get_album_with_multiple_genre(self):
 
-        self.get_disc_or_album_with_multiple_values(disc_or_album='Album',
-                                      feature='Has Multiple Genre')
-        
+        self.get_disc_or_album_with_multiple_values(
+            disc_or_album="Album", feature="Has Multiple Genre"
+        )
 
     def split_library_by_resolution(self, resolutions=[128, 192, 256, 320, 1000]):
 
-        path_to_pl = self.path_to_playlist_folder/"Playlists_by_Resolution"
+        path_to_pl = self.path_to_playlist_folder / "Playlists_by_Resolution"
         if "Playlists_by_Resolution" not in os.listdir(self.path_to_playlist_folder):
             os.mkdir(path_to_pl)
 
@@ -237,14 +244,13 @@ class LibraryProcessing:
         df_to_m3u8(df_temp, file_name, path_to_pl)
 
     def split_library_by_format(self):
-        path_to_pl = self.path_to_playlist_folder/"Playlists_by_Format"
+        path_to_pl = self.path_to_playlist_folder / "Playlists_by_Format"
         if "Playlists_by_Format" not in os.listdir(self.path_to_playlist_folder):
             os.mkdir(path_to_pl)
         for format in self.df_lib["Disc Files Kind"].unique():
             df = self.df_lib[self.df_lib["Disc Files Kind"] == format]
             file_name = f"{format}_files"
             df_to_m3u8(df, file_name, path_to_pl)
-
 
     '''def split_lib_by_features(
         self,

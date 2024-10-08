@@ -9,9 +9,7 @@ import parameters as param
 from pathlib import Path
 
 
-
 ImageFile.MAXBLOCK = 2**20
-
 
 
 def assign_artwork_to_song(song_path, image_path):
@@ -24,22 +22,22 @@ def assign_artwork_to_song(song_path, image_path):
     song_tag.save()
 
 
-def assign_non_prog_artwork_to_song_list(music_dir, music_files_paths,album_title_from_path):
+def assign_non_prog_artwork_to_song_list(
+    music_dir, music_files_paths, album_title_from_path
+):
 
     image_files_paths = get_image_files_paths(music_dir)
 
-    if music_dir/"cover.jpg" in image_files_paths:
-        image_path = music_dir/"cover.jpg"
+    if music_dir / "cover.jpg" in image_files_paths:
+        image_path = music_dir / "cover.jpg"
 
         for song_path in music_files_paths:
             assign_artwork_to_song(song_path, image_path)
-    elif music_dir/f"{album_title_from_path}.jpg" in image_files_paths:
-        image_path = music_dir/f"{album_title_from_path}.jpg"
+    elif music_dir / f"{album_title_from_path}.jpg" in image_files_paths:
+        image_path = music_dir / f"{album_title_from_path}.jpg"
 
         for song_path in music_files_paths:
             assign_artwork_to_song(song_path, image_path)
-
-
 
 
 def exctract_artwork(song_path, song_tag, is_any_cover_image, songs_wo_artwork):
@@ -63,15 +61,15 @@ def exctract_artwork(song_path, song_tag, is_any_cover_image, songs_wo_artwork):
         if not is_any_cover_image:
             image = song_tag["artwork"].first.data
 
-            save_image(image,song_path.parents[0],song_tag["title"])
-            
+            save_image(image, song_path.parents[0], song_tag["title"])
+
             is_any_cover_image = True
 
     return is_any_cover_image, songs_wo_artwork
 
-def extension_files_paths(dir_path,extensions):
 
-   
+def extension_files_paths(dir_path, extensions):
+
     files = os.listdir(str(dir_path))
 
     files = [
@@ -81,44 +79,44 @@ def extension_files_paths(dir_path,extensions):
         and not f.startswith("._")
     ]
 
-    paths = [dir_path/file for file in files]
+    paths = [dir_path / file for file in files]
 
     return paths
 
+
 def get_music_files_paths(music_dir_path):
 
-    return extension_files_paths(music_dir_path,param.music_extentions)
+    return extension_files_paths(music_dir_path, param.music_extentions)
 
 
 def get_image_files_paths(music_dir_path):
 
-    return extension_files_paths(music_dir_path,param.image_extentions)
+    return extension_files_paths(music_dir_path, param.image_extentions)
 
 
-def save_image(image,path_to_album,image_save_name):
+def save_image(image, path_to_album, image_save_name):
 
-        image = Image.open(io.BytesIO(image))
-        try:
-            image.save(
-                path_to_album/f"{image_save_name}.jpg",
-                "JPEG",
-                quality=80,
-                optimize=True,
-                progressive=False,
-            )
-        except:
-            image = image.convert("RGB")
-            image.save(
-                path_to_album/f"{image_save_name}.jpg",
-                "JPEG",
-                quality=80,
-                optimize=True,
-                progressive=False,
-            )
+    image = Image.open(io.BytesIO(image))
+    try:
+        image.save(
+            path_to_album / f"{image_save_name}.jpg",
+            "JPEG",
+            quality=80,
+            optimize=True,
+            progressive=False,
+        )
+    except:
+        image = image.convert("RGB")
+        image.save(
+            path_to_album / f"{image_save_name}.jpg",
+            "JPEG",
+            quality=80,
+            optimize=True,
+            progressive=False,
+        )
 
 
-
-class EditCoverArtwork():
+class EditCoverArtwork:
     def __init__(
         self,
         df_lib,
@@ -126,7 +124,7 @@ class EditCoverArtwork():
         create_album_jpg=True,
         complete_missing_cover_art=True,
         convert_to_non_prog=True,
-        ):
+    ):
         self.df_lib = df_lib
         self.create_cover_jpg = create_cover_jpg
         self.create_album_jpg = create_album_jpg
@@ -135,11 +133,10 @@ class EditCoverArtwork():
 
     def loop_over_albums_path(self):
 
-        paths_to_albums = list(self.df_lib.loc[:,'Album Location'].unique())
+        paths_to_albums = list(self.df_lib.loc[:, "Album Location"].unique())
 
-        
         for path_to_album in paths_to_albums:
-            path_to_album=Path(path_to_album)
+            path_to_album = Path(path_to_album)
 
             music_files_paths = get_music_files_paths(path_to_album)
             image_files_paths = get_image_files_paths(path_to_album)
@@ -153,8 +150,8 @@ class EditCoverArtwork():
             for song_path in music_files_paths:
                 song_tag = music_tag.load_file(song_path)
                 is_any_cover_image, songs_wo_artwork_paths = exctract_artwork(
-                        song_path, song_tag, is_any_cover_image, songs_wo_artwork_paths
-                    )
+                    song_path, song_tag, is_any_cover_image, songs_wo_artwork_paths
+                )
 
             if is_any_cover_image:
 
@@ -166,20 +163,26 @@ class EditCoverArtwork():
                     with open(image_file_path, "rb") as image:
 
                         image = image.read()
-                        save_image(image,path_to_album,image_save_name='cover')
+                        save_image(image, path_to_album, image_save_name="cover")
                 if self.create_album_jpg:
                     with open(image_file_path, "rb") as image:
 
                         image = image.read()
-                        save_image(image,path_to_album,image_save_name=album_title_from_path)
+                        save_image(
+                            image, path_to_album, image_save_name=album_title_from_path
+                        )
 
                 if self.convert_to_non_prog:
 
-                    assign_non_prog_artwork_to_song_list(path_to_album, music_files_paths,album_title_from_path)
+                    assign_non_prog_artwork_to_song_list(
+                        path_to_album, music_files_paths, album_title_from_path
+                    )
 
                 if songs_wo_artwork_paths and self.complete_missing_cover_art:
 
-                    assign_non_prog_artwork_to_song_list(path_to_album, songs_wo_artwork_paths,album_title_from_path)
+                    assign_non_prog_artwork_to_song_list(
+                        path_to_album, songs_wo_artwork_paths, album_title_from_path
+                    )
 
             elif songs_wo_artwork_paths:
                 print("**** Album wo artwork: ", path_to_album)

@@ -1,7 +1,7 @@
 from convertion_functions import df_to_m3u8, convert_a_playlist
 import parameters as param
 import numpy as np
-
+from pathlib import Path
 import pandas as pd
 import os
 
@@ -68,7 +68,7 @@ class LibraryProcessing:
     def convert_playlists_with_new_path(
         self,
         destination_folder="Playlists_updated",
-        orginal_path=Path('.'),
+        orginal_path=Path('file:///Volumes/MasterAudio/Audio/Gros iTunes/'),
         updated_path=Path('.'),
     ):
 

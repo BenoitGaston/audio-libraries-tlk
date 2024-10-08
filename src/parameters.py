@@ -66,18 +66,15 @@ important_cols = [
 tags_to_itunes_cols_dict = {
     "albumartist" : "Album Artist",
     "discnumber" : "Disc Number",
-    "Total Discs": "Disc Count",
-    "Total Tracks": "Track Count",
+    "totaldiscs": "Disc Count",
+    "totaltracks": "Track Count",
     "tracknumber" : "Track Number",
-    "Track Title": "Name",
+    "tracktitle": "Name",
     "length": "Total Time",
     "codec": "Kind",
     'samplerat':'Sample Rate',
     "bitrate":"Bit Rate",
 }
-
-'Channels', 'Bitspersample', 'Samplerat',
-       'Location', 'Album location'],
 
 
 itunes_cols = [

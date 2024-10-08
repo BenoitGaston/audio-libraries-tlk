@@ -23,7 +23,7 @@ def extract_tags(song_tag, album_path, song_file):
             result_dict[feature] = None
 
     result_dict["Location"] = album_path/song_file
-    result_dict["Album Location"] = song_file
+    result_dict["Album Location"] = str(album_path)
     return result_dict
 
 
@@ -33,12 +33,12 @@ def loop_over_a_music_path(music_lib_path):
 
     suffixes = param.music_extentions
     for album_path, _, filenames in os.walk(music_lib_path):
+        
+        os.listdir(album_path)
         for song_file in filenames:
             if os.path.splitext(song_file)[1].lower() in suffixes:
-                print(Path(album_path)/ song_file)
+                #print(Path(album_path)/ song_file)
                 album_path = Path(album_path)
-
-
 
                 song_tag = music_tag.load_file(album_path/song_file)
 
@@ -56,11 +56,12 @@ def loop_over_playlist_path(music_lib_path,path_to_dest_folder):
     for playlist_path, _, filenames in os.walk(music_lib_path):
         for playlist_file in filenames:
             if os.path.splitext(playlist_file)[1].lower() in suffixes:
-                print(Path(playlist_path)/ playlist_file)
-                playlist_path = Path(playlist_path)
+                if playlist_file not in os.listdir(path_to_dest_folder):
+                    #(Path(playlist_path)/ playlist_file)
+                    playlist_path = Path(playlist_path)
 
-                shutil.copy2(Path(playlist_path)/ playlist_file,
-                             Path(path_to_dest_folder)/ playlist_file,)
+                    shutil.copy2(Path(playlist_path)/ playlist_file,
+                                    Path(path_to_dest_folder)/ playlist_file,)
 
 class FolderLibraryScan:
 
@@ -74,6 +75,8 @@ class FolderLibraryScan:
         self.path_to_music_folder = path_to_music_folder
         self.path_to_dest_folder = path_to_dest_folder
         self.force_scan = force_scan
+
+
 
         if "Playlists" not in os.listdir(self.path_to_music_folder):
             os.mkdir(Path(self.path_to_music_folder)/ "Playlists")
@@ -129,4 +132,4 @@ class FolderLibraryScan:
     def get_all_playlists_from_a_folder(self):
 
         loop_over_playlist_path(self.path_to_music_folder,
-                                self.path_to_dest_folder)
+                                self.path_to_playlist_folder)

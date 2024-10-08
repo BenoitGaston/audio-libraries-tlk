@@ -1,6 +1,6 @@
 import pytest
 from pathlib import Path
-import src.lib_scan as ls
+import lib_scan as ls
 
 
 class TestTLK:

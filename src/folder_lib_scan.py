@@ -7,6 +7,7 @@ import shutil
 import parameters as param
 import logging
 from pathlib import Path
+import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +45,7 @@ def loop_over_a_music_path(music_lib_path):
     music_lib_list = []
 
     suffixes = param.music_extentions
+
     for album_path, _, filenames in os.walk(music_lib_path):
 
         os.listdir(album_path)

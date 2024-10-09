@@ -2,8 +2,6 @@ import os
 from PIL import Image, ImageFile
 import io
 import music_tag
-import pandas as pd
-import shutil
 
 import parameters as param
 from pathlib import Path

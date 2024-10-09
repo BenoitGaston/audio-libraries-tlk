@@ -5,3 +5,4 @@ itunesLibrary
 pytest
 pillow
 requests
+tqdm

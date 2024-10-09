@@ -1,1 +1,1 @@
-from .library_scanner import library_scanner
+from library_scanner import library_scanner

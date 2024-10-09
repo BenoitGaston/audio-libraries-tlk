@@ -1,8 +1,8 @@
 import pytest
-from pathlib import Path
 import sys
-import os
+
 sys.path.append('../src')
+
 import src.lib_scan as ls
 
 

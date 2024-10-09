@@ -5,6 +5,8 @@ from lib_scan import LibraryScan
 from processing_lib import LibraryProcessing
 from edit_cover_artwork import EditCoverArtwork
 
+import argparse
+
 def run_full_library_scan(path_to_library_data,
                           orginal_path_written_in_playlists=None,
                          updated_path_written_in_playlists=None,
@@ -51,3 +53,30 @@ def run_full_library_scan(path_to_library_data,
                                     create_album_jpg=create_album_title_jpg,
                                     complete_missing_cover_art=complete_missing_cover_art,
                                     convert_to_non_prog=convert_to_non_prog)
+    
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Script that create some playlists from iTunes library"
+    )
+    parser.add_argument("--path_to_library_data", required=True, type=str, help='Blabla')
+    parser.add_argument("--orginal_path_written_in_playlists", required=False, type=str, default=None, help='Blabla')
+    parser.add_argument("--updated_path_written_in_playlists", required=False, type=str, default=None, help='Blabla')
+    parser.add_argument("--create_cover_jpg", required=False, type=bool, default=False, help='Blabla')
+    parser.add_argument("--create_album_title_jpg", required=False, type=bool, default=False, help='Blabla')
+    parser.add_argument("--complete_missing_cover_art", required=False, default=False, help='Blabla')
+    parser.add_argument("--convert_to_non_prog", required=False, default=False, help='Blabla')
+
+    args = parser.parse_args()
+
+    path_to_library_data = args.path_to_library_data
+    orginal_path_written_in_playlists = args.orginal_path_written_in_playlists
+    updated_path_written_in_playlists = args.updated_path_written_in_playlists
+    create_cover_jpg = args.create_cover_jpg
+    create_album_title_jpg = args.create_album_title_jpg
+    complete_missing_cover_art = args.complete_missing_cover_art
+    convert_to_non_prog = args.convert_to_non_prog
+
+
+
+    run_full_library_scan(num1, num2, num3))

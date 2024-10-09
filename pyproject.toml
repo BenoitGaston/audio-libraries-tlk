@@ -23,6 +23,4 @@ Issues = "https://github.com/pypa/sampleproject/issues"
 
 [tool.pytest.ini_options]
 pythonpath = "src"
-testpaths = tests
-python_files = tests.py test_*.py
-pythonpath = .
+

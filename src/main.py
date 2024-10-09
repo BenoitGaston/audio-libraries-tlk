@@ -79,4 +79,11 @@ if __name__ == "__main__":
 
 
 
-    run_full_library_scan(num1, num2, num3))
+    run_full_library_scan(path_to_library_data, 
+                          orginal_path_written_in_playlists,
+                            updated_path_written_in_playlists,
+                            create_cover_jpg,
+                            create_album_title_jpg,
+                            complete_missing_cover_art,
+                            convert_to_non_prog)
+

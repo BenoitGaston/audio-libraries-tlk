@@ -10,11 +10,6 @@ import unicodedata
 import logging
 from pathlib import Path
 
-
-# the possible norms ar ‘NFC’, ‘NFKC’, ‘NFD’, and ‘NFKD’.
-norm = "NFC"
-
-
 def convert_a_playlist(
     path_to_playlist_folder,
     path_to_destination_folder,
@@ -22,6 +17,16 @@ def convert_a_playlist(
     updated_path,
     file_name,
 ):
+    """Change the location of the songs in a playlist
+    by replacing orginal_path with updated_path
+
+    Args:
+        path_to_playlist_folder (Path): _description_
+        path_to_destination_folder (Path): _description_
+        orginal_path (str): part of the path to be replaced
+        updated_path (str): _description_
+        file_name (str): file name for saving
+    """
 
     playlist_file = open(path_to_playlist_folder / file_name)
     lines = playlist_file.readlines()
@@ -34,20 +39,20 @@ def convert_a_playlist(
         if not (line.startswith("#EXTINF:") or line.startswith("#EXTM3U")):
 
             line = str(line.replace(orginal_path, updated_path))
-        f.write((unicodedata.normalize(norm, line).encode("utf-8")).decode("utf-8"))
+        f.write((unicodedata.normalize("NFC", line).encode("utf-8")).decode("utf-8"))
 
     f.close()
 
 
 def m3u8_to_csv(path_to_playlist, playlist_name):
-    """_summary_
+    """Create a csv file from a m3u8
 
     Args:
-        path_to_playlist (_type_): _description_
-        playlist_name (_type_): _description_
+        path_to_playlist (_type_): path to playlist folder
+        playlist_name (_type_): playlist name
 
     Returns:
-        _type_: _description_
+        _type_: a pandas df containing the songs from the m3u8 file
     """
 
     file1 = open(path_to_playlist / playlist_name, "r")

@@ -1,5 +1,4 @@
 from convertion_functions import df_to_m3u8, convert_a_playlist
-import parameters as param
 import numpy as np
 from pathlib import Path
 import pandas as pd
@@ -186,7 +185,7 @@ class LibraryProcessing:
         df_to_m3u8(
             df[df["Number of Album in Location"] > 1],
             "Locations_with_multiple_albums",
-            self.path_to_playlist_folder/ "Special_Playlists",
+            self.path_to_playlist_folder / "Special_Playlists",
         )
 
     def get_disc_or_album_with_multiple_values(
@@ -210,7 +209,11 @@ class LibraryProcessing:
         df = self.df_lib.copy()
         df = df[df[f"{disc_or_album} {feature}"]]
 
-        df_to_m3u8(df, f"{disc_or_album} {feature}", self.path_to_playlist_folder/ "Special_Playlists")
+        df_to_m3u8(
+            df,
+            f"{disc_or_album} {feature}",
+            self.path_to_playlist_folder / "Special_Playlists",
+        )
 
     def get_disc_with_missing_tracks(self):
 

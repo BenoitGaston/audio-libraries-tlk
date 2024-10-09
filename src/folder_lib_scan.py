@@ -7,7 +7,6 @@ import shutil
 import parameters as param
 import logging
 from pathlib import Path
-import tqdm
 
 logger = logging.getLogger(__name__)
 

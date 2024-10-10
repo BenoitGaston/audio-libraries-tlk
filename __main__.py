@@ -96,18 +96,18 @@ def scan_and_process(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Script that extract and manipulate date from audio libraries."
+        description="Script that extract and manipulate data from audio libraries."
     )
     parser.add_argument(
         "--path_to_library_data", required=True, type=str, 
-        help="Path containing to a folder containing an iTunes library .xml file or all a music library organized album folders."
+        help="Path to a directory containing an iTunes/Apple Music library .xml file or all a music library organized in folders (typically Artist/Album)."
     )
     parser.add_argument(
         "--orginal_path_written_in_playlists",
         required=False,
         type=str,
         default=None,
-        help="Part of the path to be replaced in the original playlists (for instance '/Users/antoine/Music/Music/Media/Music'). Open an m3u8 playlist with a text editor to know what to use.",
+        help="Part of the path to be replaced in the original playlists (for instance '/Users/user_name/Music/'). Open an m3u8 playlist with a text editor to know what to use.",
     )
     parser.add_argument(
         "--updated_path_written_in_playlists",
@@ -117,20 +117,20 @@ if __name__ == "__main__":
         help="Part to be used in the new music location (for instance '/home/sony/walkman/Music'). Open an m3u8 playlist with a text editor to know what to use.",
     )
     parser.add_argument(
-        "--create_cover_jpg", required=False, type=bool, default=False, help="If True an image file called 'cover.jpg' will be created inside each location containig some music files. Only 1 file will be created per location. Even if two songs have distinct coverart"
+        "--create_cover_jpg", required=False, type=bool, default=False, help="If True an image file called 'cover.jpg' will be created inside each location containig some music files. Only 1 file will be created per location. Even if two songs have distinct cover artwork"
     )
     parser.add_argument(
         "--create_album_title_jpg",
         required=False,
         type=bool,
         default=False,
-        help="If True an image file called 'title of the album.jpg' will be created inside each location containig some music files. Only 1 file will be created per location. Even if two songs have distinct coverart",
+        help="If True an image file called 'title of the album.jpg' will be created inside each location containig some music files. Only 1 file will be created per location. Even if two songs have distinct cover artworks.",
     )
     parser.add_argument(
-        "--complete_missing_cover_art", required=False, default=False, help="Use the coverart of a song (any arbitrary one) conatinied in the same location to fil all the missing coverarts"
+        "--complete_missing_cover_art", required=False, default=False, help="Use the cover artworks of a song (any arbitrary one) conatinied in the same location to fil all the missing cover artworks."
     )
     parser.add_argument(
-        "--convert_to_non_prog", required=False, default=False, help="Convert the coverarts to non-prog images."
+        "--convert_to_non_prog", required=False, default=False, help="Convert the cover artworks to non-prog images."
     )
 
     parser.add_argument(

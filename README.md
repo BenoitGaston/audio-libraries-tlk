@@ -4,7 +4,7 @@ A set of Python tools to explore and modify data contained in a music library su
 
 ## Acknoledgments
 
-This project is heavily relying on the one hand on Scholnicks' [itunesLibrary](https://pypi.org/project/iTunesLibrary/) (it self a port of Drew Stephen's [Mac-iTunes-Library](https://github.com/dinomite/Mac-iTunes-Library)) and on the other hand on KristoforMaynard's [music-tag](https://pypi.org/project/music-tag/)
+This project is heavily relying on, on the one hand on Scholnicks' [itunesLibrary](https://pypi.org/project/iTunesLibrary/) (it self a port of Drew Stephen's [Mac-iTunes-Library](https://github.com/dinomite/Mac-iTunes-Library)) and on the other hand on KristoforMaynard's [music-tag](https://pypi.org/project/music-tag/)
 
 ## Usecases
 
@@ -77,7 +77,7 @@ options:
                         a music library organized album folders.
   --orginal_path_written_in_playlists ORGINAL_PATH_WRITTEN_IN_PLAYLISTS default=None
                         Part of the path to be replaced in the original playlists (for instance
-                        '/Users/antoine/Music/Music/Media/Music'). Open an m3u8 playlist with a
+                        '/Users/UserName/Music/Music/Media/Music'). Open an m3u8 playlist with a
                         text editor to know what to use.
   --updated_path_written_in_playlists UPDATED_PATH_WRITTEN_IN_PLAYLISTS default=None
                         Part to be used in the new music location (for instance

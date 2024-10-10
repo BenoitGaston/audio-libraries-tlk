@@ -3,12 +3,12 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "itunes-tool-kit"
+name = "audio-libraries-tlk"
 version = "0.0.1"
 authors = [
   { name="Antoine Clais", email="antoine@math-clais.ovh" },
 ]
-description = "A package to extract and manipulate data contained in iTunes Library xml files."
+description = "A package to extract and manipulate data audio libaries data (playlists, cover artwork, etc)."
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
@@ -18,8 +18,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/pypa/sampleproject"
-Issues = "https://github.com/pypa/sampleproject/issues"
+Homepage = "https://github.com/Sialcant/audio-libraries-tlk"
+Issues = "https://github.com/Sialcant/audio-libraries-tlk/issues"
 
 [tool.pytest.ini_options]
 pythonpath = "src"

@@ -138,3 +138,95 @@ itunes_cols = [
     "Video Width",
     "Work",
 ]
+
+
+itunes_numeric_columns = [
+            "Album Rating",
+            "Artwork Count",
+            "Bit Rate",
+            "Disc Count",
+            "Disc Number",
+            "Movement Count",
+            "Movement Number",
+            "Play Count",
+            "Play Date",
+            "Rating",
+            "Sample Rate",
+            "Size",
+            "Skip Count",
+            "Track Count",
+            "Track ID",
+            "Track Number",
+            "Year",
+            "Total Time",
+        ]
+
+
+
+
+itunes_date_columns = [
+            "Date Added",
+            "Date Modified",
+            "Play Date UTC",
+            "Release Date",
+            "Skip Date",
+        ]
+
+
+itunes_bool_columns = [
+            "Album Loved",
+            "Apple Music",
+            "Clean",
+            "Compilation",
+            "Explicit",
+            "HD",
+            "Has Video",
+            "Loved",
+            "Matched",
+            "Music Video",
+            "Part Of Gapless Album",
+            "Playlist Only",
+        ]
+
+
+itunes_usefull_cols = [
+            "Track ID",
+            "Name",
+            "Artist",
+            "Album Artist",
+            "Composer",
+            "Album",
+            "Genre",
+            "Kind",
+            "Size",
+            "Total Time",
+            "Disc Number",
+            "Disc Count",
+            "Track Number",
+            "Track Count",
+            "Year",
+            "Date Modified",
+            "Date Added",
+            "Bit Rate",
+            "Sample Rate",
+            "Normalization",
+            "Compilation",
+            "Album Rating",
+            "Artwork Count",
+            "File Type",
+            "Play Count",
+            "Play Date",
+            "Play Date UTC",
+            "Rating",
+            "Sort Album",
+            "Sort Album Artist",
+            "Sort Composer",
+            "Sort Artist",
+            "Sort Name",
+            "Persistent ID",
+            "Track Type",
+            "Location",
+            "File Folder Count",
+            "Library Folder Count",
+            "Podcast",
+        ]

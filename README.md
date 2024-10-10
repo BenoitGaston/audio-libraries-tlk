@@ -16,6 +16,10 @@ This project has been orginited from the needs of:
 
 ## How to install
 
-
+Through pip
+```
+python3 -m pip install audio-libraries-tlk
+```
 
 ## How to run
+

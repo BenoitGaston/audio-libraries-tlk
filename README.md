@@ -1,6 +1,6 @@
 # audio-libraries-tlk
 
-A set of Python tools to explore and modify programatically the metadata contained in a music library. 
+A set of Python tools to explore and modify data contained in a music library such as playlists or album cover artwork. 
 
 ## Acknoledgments
 
@@ -16,6 +16,10 @@ This project has been orginited from the needs of:
 
 ## How to install
 
-
+Through pip
+```
+python3 -m pip install audio-libraries-tlk
+```
 
 ## How to run
+

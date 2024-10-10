@@ -11,7 +11,9 @@ version = "0.0.1"
 authors = [
   { name="Antoine Clais", email="antoine@math-clais.ovh" },
 ]
+
 description = "A package to extract and manipulate data contained in a music library such as playlists or album cover artwork."
+
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [

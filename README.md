@@ -4,15 +4,16 @@ A set of Python tools to explore and modify data contained in a music library su
 
 ## Acknoledgments
 
-This project is heavily relying on the one hand on Scholnicks' [itunesLibrary](https://pypi.org/project/iTunesLibrary/) (it self a port of Drew Stephen's [Mac-iTunes-Library](https://github.com/dinomite/Mac-iTunes-Library)) and on the other hand on KristoforMaynard's [music-tag](https://pypi.org/project/music-tag/)
+This project is heavily relying on, on the one hand Scholnicks' [itunesLibrary](https://pypi.org/project/iTunesLibrary/) (it self a port of Drew Stephen's [Mac-iTunes-Library](https://github.com/dinomite/Mac-iTunes-Library)), on the other hand on KristoforMaynard's [music-tag](https://pypi.org/project/music-tag/)
 
 ## Usecases
 
-This project has been orginited from the needs of:
+This project originates from the following needs:
 
 1. Transfering playlists from different audio devices.
 2. Convert cover artwork of songs to non-prog images.
-3. Explore inconsistencies in a music library (incomplete albums, songs placed in the wrong location, ...)
+3. Explore inconsistencies in a music library (incomplete albums, songs placed in the wrong location, etc).
+4. These would be possible for both an iTunes or Apple Music managed library and a library managed by hand in folders.
 
 ## How to install
 
@@ -34,36 +35,36 @@ python3 -m pip install audio-libraries-tlk
 
 * Again try the script on a small duplicated sample of your music files and check if the reasult pleases you.
 
-**Be patient**
+## Be patient
 
 Depending on the option you choose the script can take a long time to run: up to ~1 hour for 1 30k songs library on a mac mini M2.
 
+**To save time in the case you need to run the script twice** and to avoide the full scan of the music files or of the .xml file twice, a .pickle and a .csv file are created by the first scan of the library. These will be reused in the the second call to significantly reduce the time of the second call. 
 
+However, if your music files or .xml have changed between the fiorst and the second call, you need to remove the existing .pickles and .csv are these wont reflect anymore the state of your music library.
 
+## Outputs 
+
+The `.m3u8`, `.csv` and `.pickle`files created by the script will be located inside the `PATH_TO_LIBRARY_DATA`.
 
 
 ## How to run
 
-* To run the script from an iTunes or Apple Music, first go to setting/Library/Export Library. Save the .xml file in a folder and copy this path (for instance '/Users/user_name/Music/' where you have placed the file 'My_Library.xml').
-* To run the script from a music library that is simply organised in folders (for instance Artist/Album). Simply copy the path pointing to our music directory (for instance '/Users/user_name/Music/Music/Media/Music').
+* To run the script from an iTunes or Apple Music, first go to `setting/Library/Export Library`. Save the `.xml` file in a folder and copy this path (for instance `/Users/user_name/Music/` where you have placed the file `My_Library.xml`).
+* To run the script from a music library that is simply organised in folders (for instance `Artist/Album`). Simply copy the path pointing to our music directory (for instance `/Users/user_name/Music/Music/Media/Music`).
 
-Then, to extract all the playlists contained in your music library, convert them into a format readable by a new audio device, and create a cover.jpg file for inside each album folder, run the command:
+Then, for instance, to extract all the playlists contained in your music library, convert them into a format readable by a new audio device, and create a `cover.jpg` file for inside each album folder, run the command:
 
 ```
-python3 -m audio-libraries-tlk --path_to_library_data='/Users/user_name/Music/' --orginal_path_written_in_playlists='/Users/user_name/Music/' 
---updated_path_written_in_playlists='/home/Music/'
---create_cover_jpg=True
+python3 -m audio-libraries-tlk --path_to_library_data='/Users/user_name/Music/' --orginal_path_written_in_playlists='/Users/user_name/Music/' --updated_path_written_in_playlists='/home/Music/' --create_cover_jpg=True
 ```
 
-## Outputs 
-
-The .m3u8, .csv files and .pickle created by the script will be located inside the PATH_TO_LIBRARY_DATA.
 
 ## To save time on the second run
 
-To save time in the case you need to run the script twice and to avoide the full scan of the music files or of the .xml file twice, a .pickle and a .csv file are created by the first scan of the library. These will be reused in the the second call to significantly reduce the time of the second call. 
+To save time in the case you need to run the script twice and to avoide the full scan of the music files or of the `.xml`file twice, a `.pickle` and a `.csv` file are created by the first scan of the library. These will be reused in the the second call to significantly reduce the time of the second call. 
 
-However, if your music files or .xml have changed between the fiorst and the second call, you need to remove the existing .pickles and .csv are these wont reflect anymore the state of your music library.
+However, if your music files or `.xml` have changed between the fiorst and the second call, you need to remove the existing `.pickles` and `.csv` are these wont reflect anymore the state of your music library.
 
 
 ## Detailed options
@@ -101,4 +102,3 @@ options:
                         library.
 ````
 
-## Outputs 

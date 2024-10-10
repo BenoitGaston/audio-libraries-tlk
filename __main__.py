@@ -96,11 +96,11 @@ def scan_and_process(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Script that create some playlists from iTunes library"
+        description="Script that extract and manipulate date from audio libraries."
     )
     parser.add_argument(
         "--path_to_library_data", required=True, type=str, 
-        help="Path containing to a folder containing an iTunes library .xml file or all a music library organized in folders."
+        help="Path containing to a folder containing an iTunes library .xml file or all a music library organized album folders."
     )
     parser.add_argument(
         "--orginal_path_written_in_playlists",
@@ -133,6 +133,10 @@ if __name__ == "__main__":
         "--convert_to_non_prog", required=False, default=False, help="Convert the coverarts to non-prog images."
     )
 
+    parser.add_argument(
+        "--create_special_playlists", required=False, default=False, help="Create some playlists and csv file to underline some aspects of a music library."
+    )
+
     args = parser.parse_args()
 
     path_to_library_data = args.path_to_library_data
@@ -142,6 +146,7 @@ if __name__ == "__main__":
     create_album_title_jpg = args.create_album_title_jpg
     complete_missing_cover_art = args.complete_missing_cover_art
     convert_to_non_prog = args.convert_to_non_prog
+    create_special_playlists = args.create_special_playlists
 
     scan_and_process(
         path_to_library_data,
@@ -151,4 +156,5 @@ if __name__ == "__main__":
         create_album_title_jpg,
         complete_missing_cover_art,
         convert_to_non_prog,
+        create_special_playlists,
     )

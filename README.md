@@ -2,7 +2,11 @@
 
 A set of Python tools to explore and modify data contained in a music library such as playlists or album cover artwork. 
 
-## Acknoledgments
+## Link to Pypi package
+
+https://pypi.org/project/audio-libraries-tlk/
+
+## Acknowledgments
 
 This project is heavily relying on, on the one hand Scholnicks' [itunesLibrary](https://pypi.org/project/iTunesLibrary/) (it self a port of Drew Stephen's [Mac-iTunes-Library](https://github.com/dinomite/Mac-iTunes-Library)), on the other hand on KristoforMaynard's [music-tag](https://pypi.org/project/music-tag/)
 

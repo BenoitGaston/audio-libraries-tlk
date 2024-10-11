@@ -2,7 +2,7 @@
 
 A set of Python tools to explore and modify data contained in a music library such as playlists or album cover artwork. 
 
-## Link to Pypi package
+## Link to PyPi package
 
 https://pypi.org/project/audio-libraries-tlk/
 

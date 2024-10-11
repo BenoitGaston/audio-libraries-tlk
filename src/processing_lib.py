@@ -71,11 +71,16 @@ class LibraryProcessing:
         self.df_lib = df_lib
         self.path_to_playlist_folder = path_to_playlist_folder
 
+        if not os.path.isdir(self.path_to_playlist_folder):
+
+            os.mkdir(self.path_to_playlist_folder)
+
+
     def convert_playlists_with_new_path(
         self,
         destination_folder="Converted_Playlists",
-        orginal_path=Path("file:///Volumes/MasterAudio/Audio/Gros iTunes/"),
-        updated_path=Path("/path/to/my/mobile/player/"),
+        orginal_path=Path("."),
+        updated_path=Path("."),
     ):
 
         if destination_folder not in os.listdir(self.path_to_playlist_folder):

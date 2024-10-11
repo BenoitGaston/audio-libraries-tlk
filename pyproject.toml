@@ -7,7 +7,7 @@ allow-direct-references = true
 
 [project]
 name = "audio-libraries-tlk"
-version = "0.0.1"
+version = "1.0.0"
 authors = [
   { name="Benoît Gaston", email="benoitgaston59@gmail.com" },
 ]
@@ -23,8 +23,8 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Sialcant/audio-libraries-tlk"
-Issues = "https://github.com/Sialcant/audio-libraries-tlk/issues"
+Homepage = "https://github.com/BenoitGaston/audio-libraries-tlk"
+Issues = "https://github.com/BenoitGaston/audio-libraries-tlk/issues"
 
 [tool.pytest.ini_options]
 pythonpath = "src"

@@ -294,9 +294,9 @@ class MiniDiscCovers:
     ):
         self.path_to_music_folder = Path(path_to_music_folder)
 
-        if "MiniDisc_Covers" not in os.listdir(self.path_to_music_folder):
-            os.mkdir(Path(self.path_to_music_folder) / "MiniDisc_Covers")
-        self.path_to_dest_folder = (self.path_to_music_folder) / "MiniDisc_Covers"
+        if "MiniDisc-Labels" not in os.listdir(self.path_to_music_folder):
+            os.mkdir(Path(self.path_to_music_folder) / "MiniDisc-Labels")
+        self.path_to_dest_folder = (self.path_to_music_folder) / "MiniDisc-Labels"
 
     def create_mini_disc_df(self):
 

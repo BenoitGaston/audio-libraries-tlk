@@ -141,95 +141,93 @@ itunes_cols = [
 
 
 itunes_numeric_columns = [
-            "Album Rating",
-            "Artwork Count",
-            "Bit Rate",
-            "Disc Count",
-            "Disc Number",
-            "Movement Count",
-            "Movement Number",
-            "Play Count",
-            "Play Date",
-            "Rating",
-            "Sample Rate",
-            "Size",
-            "Skip Count",
-            "Track Count",
-            "Track ID",
-            "Track Number",
-            "Year",
-            "Total Time",
-        ]
-
-
+    "Album Rating",
+    "Artwork Count",
+    "Bit Rate",
+    "Disc Count",
+    "Disc Number",
+    "Movement Count",
+    "Movement Number",
+    "Play Count",
+    "Play Date",
+    "Rating",
+    "Sample Rate",
+    "Size",
+    "Skip Count",
+    "Track Count",
+    "Track ID",
+    "Track Number",
+    "Year",
+    "Total Time",
+]
 
 
 itunes_date_columns = [
-            "Date Added",
-            "Date Modified",
-            "Play Date UTC",
-            "Release Date",
-            "Skip Date",
-        ]
+    "Date Added",
+    "Date Modified",
+    "Play Date UTC",
+    "Release Date",
+    "Skip Date",
+]
 
 
 itunes_bool_columns = [
-            "Album Loved",
-            "Apple Music",
-            "Clean",
-            "Compilation",
-            "Explicit",
-            "HD",
-            "Has Video",
-            "Loved",
-            "Matched",
-            "Music Video",
-            "Part Of Gapless Album",
-            "Playlist Only",
-        ]
+    "Album Loved",
+    "Apple Music",
+    "Clean",
+    "Compilation",
+    "Explicit",
+    "HD",
+    "Has Video",
+    "Loved",
+    "Matched",
+    "Music Video",
+    "Part Of Gapless Album",
+    "Playlist Only",
+]
 
 
 itunes_usefull_cols = [
-            "Track ID",
-            "Name",
-            "Artist",
-            "Album Artist",
-            "Composer",
-            "Album",
-            "Genre",
-            "Kind",
-            "Size",
-            "Total Time",
-            "Disc Number",
-            "Disc Count",
-            "Track Number",
-            "Track Count",
-            "Year",
-            "Date Modified",
-            "Date Added",
-            "Bit Rate",
-            "Sample Rate",
-            "Normalization",
-            "Compilation",
-            "Album Rating",
-            "Artwork Count",
-            "File Type",
-            "Play Count",
-            "Play Date",
-            "Play Date UTC",
-            "Rating",
-            "Sort Album",
-            "Sort Album Artist",
-            "Sort Composer",
-            "Sort Artist",
-            "Sort Name",
-            "Persistent ID",
-            "Track Type",
-            "Location",
-            "File Folder Count",
-            "Library Folder Count",
-            "Podcast",
-        ]
+    "Track ID",
+    "Name",
+    "Artist",
+    "Album Artist",
+    "Composer",
+    "Album",
+    "Genre",
+    "Kind",
+    "Size",
+    "Total Time",
+    "Disc Number",
+    "Disc Count",
+    "Track Number",
+    "Track Count",
+    "Year",
+    "Date Modified",
+    "Date Added",
+    "Bit Rate",
+    "Sample Rate",
+    "Normalization",
+    "Compilation",
+    "Album Rating",
+    "Artwork Count",
+    "File Type",
+    "Play Count",
+    "Play Date",
+    "Play Date UTC",
+    "Rating",
+    "Sort Album",
+    "Sort Album Artist",
+    "Sort Composer",
+    "Sort Artist",
+    "Sort Name",
+    "Persistent ID",
+    "Track Type",
+    "Location",
+    "File Folder Count",
+    "Library Folder Count",
+    "Podcast",
+]
 
 
 ####################
@@ -237,58 +235,59 @@ itunes_usefull_cols = [
 ####################
 
 
-background_default= '211e1e' #another kind of black
-text_default= 'ffffff' #white
+background_default = "211e1e"  # another kind of black
+text_default = "ffffff"  # white
 
-md_logo_text_default = '040404' #kind of black
-md_logo_background_default = 'fcfcfc' #kind of white
+md_logo_text_default = "040404"  # kind of black
+md_logo_background_default = "fcfcfc"  # kind of white
 
-white = 'ffffff'
-black_full = '000000'
-yellow = 'ffd42a'
-red = 'd40000'
-green = '008000'
-orange = 'ff6600'
-purpule = '892ca0'
-purple_light = 'b380ff'
-pink = 'ff00ff'
-blue = '3737c8'
-blue_sky = '2ad4ff'
-blue_green = '5fd38d'
-blue_steel = '214478'
-blue_navy = '00002b'
-blue_turquoise = '00ffff'
-fushia = 'ff00ff'
-gold = 'aa8800'
-silver = 'cccccc'
+white = "ffffff"
+black_full = "000000"
+yellow = "ffd42a"
+red = "d40000"
+green = "008000"
+orange = "ff6600"
+purpule = "892ca0"
+purple_light = "b380ff"
+pink = "ff00ff"
+blue = "3737c8"
+blue_sky = "2ad4ff"
+blue_green = "5fd38d"
+blue_steel = "214478"
+blue_navy = "00002b"
+blue_turquoise = "00ffff"
+fushia = "ff00ff"
+gold = "aa8800"
+silver = "cccccc"
 
-#background_colors
-color_map = { 'black': background_default, 
-            'sky_blue': blue_sky, 
-            'blue': blue, 
-            'blue_steel': blue_steel, 
-            'blue_green' : blue_green,
-            'navy_blue' : blue_navy,
-            'blue_turquoise' : blue_turquoise,
-            'fushia' : fushia,
-            'gold' : gold,
-            'green' :green ,
-            'pink' : pink,
-            'purple_light':purple_light,
-            'purple':purpule ,
-            'orange' : orange,
-            'red' :red ,
-            'yellow' : yellow,
-            'white': white,
-            'silver' : silver,
-            }
+# background_colors
+color_map = {
+    "black": background_default,
+    "sky_blue": blue_sky,
+    "blue": blue,
+    "blue_steel": blue_steel,
+    "blue_green": blue_green,
+    "navy_blue": blue_navy,
+    "blue_turquoise": blue_turquoise,
+    "fushia": fushia,
+    "gold": gold,
+    "green": green,
+    "pink": pink,
+    "purple_light": purple_light,
+    "purple": purpule,
+    "orange": orange,
+    "red": red,
+    "yellow": yellow,
+    "white": white,
+    "silver": silver,
+}
 
 
-
-default_theme = {'background_color':  background_default,
-                 'main_text_color':  white,
-                 'md_logo_background_color':  gold,
-                 'md_logo_text_color': red,
-                 'triangle_color':blue,
-                 'insert_color': yellow,
-                 }
+default_theme = {
+    "background_color": background_default,
+    "main_text_color": white,
+    "md_logo_background_color": gold,
+    "md_logo_text_color": red,
+    "triangle_color": blue,
+    "insert_color": yellow,
+}

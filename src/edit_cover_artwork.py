@@ -70,7 +70,6 @@ def extract_artwork(song_path, song_tag, is_any_cover_image, songs_wo_artwork):
 def extension_files_paths(dir_path, extensions):
 
     files = os.listdir(str(dir_path))
-    
 
     files = [
         f
@@ -78,7 +77,6 @@ def extension_files_paths(dir_path, extensions):
         if (True in [f.lower().endswith(form) for form in extensions])
         and not f.startswith("._")
     ]
-
 
     paths = [dir_path / file for file in files]
 
@@ -186,4 +184,4 @@ class EditCoverArtwork:
                     )
 
             elif songs_wo_artwork_paths:
-                logging.warning(f'**** Album wo artwork: , {path_to_album}')
+                logging.warning(f"**** Album wo artwork: , {path_to_album}")

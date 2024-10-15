@@ -9,6 +9,7 @@ import os
 import unicodedata
 import logging
 
+
 def convert_a_playlist(
     path_to_playlist_folder,
     path_to_destination_folder,
@@ -94,7 +95,9 @@ def m3u8_to_csv(path_to_playlist, playlist_name):
         }
     )
 
-    df.loc[:, "Location"] = df.loc[:, "Location"].apply(lambda x: Path(unquote(x.replace('file:',''))))
+    df.loc[:, "Location"] = df.loc[:, "Location"].apply(
+        lambda x: Path(unquote(x.replace("file:", "")))
+    )
     df.loc[:, "Album Location"] = df.loc[:, "Location"].apply(lambda x: x.parent)
     df.to_csv(path_to_playlist / playlist_name.replace("m3u8", "csv"))
 

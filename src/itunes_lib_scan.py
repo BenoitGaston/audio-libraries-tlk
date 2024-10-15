@@ -109,7 +109,6 @@ class iTunesLibraryScan:
         )
 
         data = defaultdict(list)
-        
 
         for i, _ in enumerate(root[0][17]):
             temp_columns = list.copy(columns)
@@ -130,19 +129,20 @@ class iTunesLibraryScan:
                     data[column].append(np.nan)
         df = pd.DataFrame(data)
 
-        
         logging.info(f"Shape of your Lib Data {df.shape}")
         logging.info(f"Columns of your Lib csv {df.columns}")
 
-        df[param.itunes_numeric_columns ] = df[param.itunes_numeric_columns].apply(pd.to_numeric)
+        df[param.itunes_numeric_columns] = df[param.itunes_numeric_columns].apply(
+            pd.to_numeric
+        )
 
-        df[param.itunes_date_columns] = df[param.itunes_date_columns].apply(pd.to_datetime)
+        df[param.itunes_date_columns] = df[param.itunes_date_columns].apply(
+            pd.to_datetime
+        )
 
         df["Play Date"] = pd.to_datetime(df["Play Date"] - 2082826800, unit="s")
 
         # df.loc[:,'Total Time'] = pd.to_timedelta(df['Total Time'], unit='ms')
-
-
 
         df[["Album Rating", "Rating", "Bit Rate"]] = df[
             ["Album Rating", "Rating", "Bit Rate"]
@@ -172,9 +172,10 @@ class iTunesLibraryScan:
             dtype_dict.update({col:str for col in param.itunes_usefull_cols if not (col in param.itunes_numeric_columns
                                                                  or col in  param.itunes_bool_columns)})
             print(dtype_dict.keys())"""
-            df_lib = pd.read_csv(self.path_to_dest_folder / csv_name)#,dtype = dtype_dict)
-            print(df_lib.iloc[:,[30]].columns)
-
+            df_lib = pd.read_csv(
+                self.path_to_dest_folder / csv_name
+            )  # ,dtype = dtype_dict)
+            print(df_lib.iloc[:, [30]].columns)
 
         else:
             # must first parse...

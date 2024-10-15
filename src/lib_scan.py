@@ -20,7 +20,9 @@ class LibraryScan:
         elif path_to_library_file is None and path_to_music_folder is not None:
 
             self.Scan = FolderLibraryScan(
-                path_to_music_folder, path_to_dest_folder, force_scan,
+                path_to_music_folder,
+                path_to_dest_folder,
+                force_scan,
             )
             self.iTunes_lib = False
 

@@ -22,9 +22,6 @@ def scan_and_process(
 ):
     xml_files = [f for f in os.listdir(path_to_library_data) if f.endswith(".xml")]
 
-    
-
-
     if len(xml_files) > 0:
         path_to_library_file = Path(path_to_library_data) / xml_files[0]
         path_to_dest_folder = Path(path_to_library_data)
@@ -34,28 +31,28 @@ def scan_and_process(
         )
         scan_only_for_playlists_convertion = False
 
-
     else:
         path_to_library_file = None
         path_to_dest_folder = Path(path_to_library_data)
         path_to_music_folder = path_to_library_data
         path_to_playlist_folder = path_to_dest_folder / "Playlists"
-        if (orginal_path_written_in_playlists != None
+        if (
+            orginal_path_written_in_playlists != None
             and updated_path_written_in_playlists != None
-            and create_cover_jpg==False
-            and create_album_title_jpg==False
-            and complete_missing_cover_art==False
-            and convert_to_non_prog==False
-            and create_special_playlists==False):
+            and create_cover_jpg == False
+            and create_album_title_jpg == False
+            and complete_missing_cover_art == False
+            and convert_to_non_prog == False
+            and create_special_playlists == False
+        ):
             scan_only_for_playlists_convertion = True
         else:
             scan_only_for_playlists_convertion = False
 
-    
     library_scan = LibraryScan(
         path_to_library_file=path_to_library_file,
         path_to_music_folder=path_to_music_folder,
-        path_to_dest_folder=path_to_dest_folder
+        path_to_dest_folder=path_to_dest_folder,
     )
     if scan_only_for_playlists_convertion:
         lib_df = None
@@ -86,17 +83,18 @@ def scan_and_process(
         | convert_to_non_prog
     ):
 
-        edit_covers = EditCoverArtwork(df_lib=lib_df,
-                                       create_cover_jpg=create_cover_jpg,
-                                        create_album_jpg=create_album_title_jpg,
-                                        complete_missing_cover_art=complete_missing_cover_art,
-                                        convert_to_non_prog=convert_to_non_prog,)
+        edit_covers = EditCoverArtwork(
+            df_lib=lib_df,
+            create_cover_jpg=create_cover_jpg,
+            create_album_jpg=create_album_title_jpg,
+            complete_missing_cover_art=complete_missing_cover_art,
+            convert_to_non_prog=convert_to_non_prog,
+        )
 
-        edit_covers.loop_over_albums_path( )
+        edit_covers.loop_over_albums_path()
     if create_minidisc_labels:
         minidisc_covers = MiniDiscCovers(path_to_music_folder=path_to_music_folder)
         minidisc_covers.build_md_labels()
-
 
 
 if __name__ == "__main__":
@@ -104,8 +102,10 @@ if __name__ == "__main__":
         description="Script that extract and manipulate data from audio libraries."
     )
     parser.add_argument(
-        "--path_to_library_data", required=True, type=str, 
-        help="Path to a directory containing an iTunes/Apple Music library .xml file or all a music library organized in folders (typically Artist/Album)."
+        "--path_to_library_data",
+        required=True,
+        type=str,
+        help="Path to a directory containing an iTunes/Apple Music library .xml file or all a music library organized in folders (typically Artist/Album).",
     )
     parser.add_argument(
         "--orginal_path_written_in_playlists",
@@ -122,7 +122,11 @@ if __name__ == "__main__":
         help="Part to be used in the new music location (for instance '/home/sony/walkman/Music'). Open an m3u8 playlist with a text editor to know what to use.",
     )
     parser.add_argument(
-        "--create_cover_jpg", required=False, type=bool, default=False, help="If True an image file called 'cover.jpg' will be created inside each location containig some music files. Only 1 file will be created per location. Even if two songs have distinct cover artwork"
+        "--create_cover_jpg",
+        required=False,
+        type=bool,
+        default=False,
+        help="If True an image file called 'cover.jpg' will be created inside each location containig some music files. Only 1 file will be created per location. Even if two songs have distinct cover artwork",
     )
     parser.add_argument(
         "--create_album_title_jpg",
@@ -132,18 +136,30 @@ if __name__ == "__main__":
         help="If True an image file called 'title of the album.jpg' will be created inside each location containig some music files. Only 1 file will be created per location. Even if two songs have distinct cover artworks.",
     )
     parser.add_argument(
-        "--complete_missing_cover_art", required=False, default=False, help="Use the cover artworks of a song (any arbitrary one) conatinied in the same location to fil all the missing cover artworks."
+        "--complete_missing_cover_art",
+        required=False,
+        default=False,
+        help="Use the cover artworks of a song (any arbitrary one) conatinied in the same location to fil all the missing cover artworks.",
     )
     parser.add_argument(
-        "--convert_to_non_prog", required=False, default=False, help="Convert the cover artworks to non-prog images."
+        "--convert_to_non_prog",
+        required=False,
+        default=False,
+        help="Convert the cover artworks to non-prog images.",
     )
 
     parser.add_argument(
-        "--create_special_playlists", required=False, default=False, help="Create some playlists and csv file to underline some aspects of a music library."
+        "--create_special_playlists",
+        required=False,
+        default=False,
+        help="Create some playlists and csv file to underline some aspects of a music library.",
     )
 
     parser.add_argument(
-        "--create_minidisc_labels", required=False, default=False, help="From an .m3u8 file, create some MiniDisc labels using the cover artwork present in the audio library."
+        "--create_minidisc_labels",
+        required=False,
+        default=False,
+        help="From an .m3u8 file, create some MiniDisc labels using the cover artwork present in the audio library.",
     )
 
     args = parser.parse_args()
@@ -156,7 +172,7 @@ if __name__ == "__main__":
     complete_missing_cover_art = args.complete_missing_cover_art
     convert_to_non_prog = args.convert_to_non_prog
     create_special_playlists = args.create_special_playlists
-    create_minidisc_labels=args.create_minidisc_labels
+    create_minidisc_labels = args.create_minidisc_labels
 
     scan_and_process(
         path_to_library_data,

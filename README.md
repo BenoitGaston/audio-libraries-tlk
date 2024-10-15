@@ -18,6 +18,7 @@ This project originates from the following needs:
 2. Convert cover artwork of songs to non-prog images.
 3. Explore inconsistencies in a music library (incomplete albums, songs placed in the wrong location, etc).
 4. These would be possible for both an iTunes or Apple Music managed library and a library managed by hand in folders.
+5. Use playlists and existing cover artworks to create MiniDisc labels.
 
 ## How to install
 

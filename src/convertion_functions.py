@@ -8,7 +8,6 @@ from urllib.parse import unquote
 import os
 import unicodedata
 import logging
-from pathlib import Path
 
 def convert_a_playlist(
     path_to_playlist_folder,
@@ -90,12 +89,13 @@ def m3u8_to_csv(path_to_playlist, playlist_name):
         {
             "Artist": artist_list,
             "Title": title_list,
-            "Duration": duration_list,
+            "Total Time": duration_list,
             "Location": location_list,
         }
     )
 
-    df.loc[:, "Location"] = df.loc[:, "Location"].apply(lambda x: unquote(x))
+    df.loc[:, "Location"] = df.loc[:, "Location"].apply(lambda x: Path(unquote(x.replace('file:',''))))
+    df.loc[:, "Album Location"] = df.loc[:, "Location"].apply(lambda x: x.parent)
     df.to_csv(path_to_playlist / playlist_name.replace("m3u8", "csv"))
 
     return df

@@ -47,7 +47,7 @@ def loop_over_a_music_path(music_lib_path):
 
     for album_path, _, filenames in os.walk(music_lib_path):
 
-        os.listdir(album_path)
+
         for song_file in filenames:
             if os.path.splitext(song_file)[1].lower() in suffixes:
 
@@ -58,6 +58,25 @@ def loop_over_a_music_path(music_lib_path):
                 tags_dict = extract_tags(song_tag, album_path, song_file)
 
                 music_lib_list.append(tags_dict)
+
+    music_lib_df = pd.DataFrame(music_lib_list)
+
+    return music_lib_df
+
+def loop_over_a_songs_df(songs_df):
+
+    music_lib_list = []
+
+    for _,row in songs_df.iterrows():
+
+        song_location = row['Location']
+        album_path = Path(song_location).parent
+        
+        song_tag = music_tag.load_file(str(song_location).replace('file:',''))
+        tags_dict = extract_tags(song_tag, album_path, Path(song_location).name)
+
+        music_lib_list.append(tags_dict)
+
 
     music_lib_df = pd.DataFrame(music_lib_list)
 
@@ -78,7 +97,43 @@ def loop_over_playlist_path(music_lib_path, path_to_dest_folder):
                         Path(playlist_path) / playlist_file,
                         Path(path_to_dest_folder) / playlist_file,
                     )
+def format_df_to_iTunes_csv_format(df_lib_scanned):
 
+    df_lib_scanned.rename(columns=param.tags_to_itunes_cols_dict, inplace=True)
+    df_lib_scanned.rename(
+                columns={col: col.replace("#", "") for col in df_lib_scanned.columns},
+                inplace=True,
+            )
+
+    numeric_columns = [
+                "Album Rating",
+                "Artwork Count",
+                "Bit Rate",
+                "Disc Count",
+                "Disc Number",
+                "Movement Count",
+                "Movement Number",
+                "Play Count",
+                "Play Date",
+                "Rating",
+                "Sample Rate",
+                "Size",
+                "Skip Count",
+                "Track Count",
+                "Track ID",
+                "Track Number",
+                "Year",
+                "Total Time",
+            ]
+
+    numeric_columns = [
+                col for col in numeric_columns if col in df_lib_scanned.columns
+            ]
+
+    df_lib_scanned[numeric_columns] = df_lib_scanned[numeric_columns].apply(
+                pd.to_numeric
+            )
+    return df_lib_scanned
 
 class FolderLibraryScan:
 
@@ -100,7 +155,7 @@ class FolderLibraryScan:
 
         self.df_lib = pd.DataFrame([])
 
-        logging.warning(" ! Warning this part is going to modify your music files !")
+
 
     def get_folder_library_as_csv(self):
 
@@ -128,41 +183,9 @@ class FolderLibraryScan:
             )
 
         if not df_lib_scanned.empty:
+            df_lib_scanned = format_df_to_iTunes_csv_format(df_lib_scanned)
 
-            df_lib_scanned.rename(columns=param.tags_to_itunes_cols_dict, inplace=True)
-            df_lib_scanned.rename(
-                columns={col: col.replace("#", "") for col in df_lib_scanned.columns},
-                inplace=True,
-            )
-
-            numeric_columns = [
-                "Album Rating",
-                "Artwork Count",
-                "Bit Rate",
-                "Disc Count",
-                "Disc Number",
-                "Movement Count",
-                "Movement Number",
-                "Play Count",
-                "Play Date",
-                "Rating",
-                "Sample Rate",
-                "Size",
-                "Skip Count",
-                "Track Count",
-                "Track ID",
-                "Track Number",
-                "Year",
-                "Total Time",
-            ]
-
-            numeric_columns = [
-                col for col in numeric_columns if col in df_lib_scanned.columns
-            ]
-
-            df_lib_scanned[numeric_columns] = df_lib_scanned[numeric_columns].apply(
-                pd.to_numeric
-            )
+            
 
         df_lib_scanned.to_csv(
             self.path_to_dest_folder

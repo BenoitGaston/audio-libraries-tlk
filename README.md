@@ -54,6 +54,8 @@ The `.m3u8`, `.csv` and `.pickle`files created by the script will be located ins
 
 ## How to run
 
+### 1. For general Library Scan and cover Artwork update
+
 * To run the script from an iTunes or Apple Music, first go to `setting/Library/Export Library`. Save the `.xml` file in a folder and copy this path (for instance `/Users/user_name/Music/` where you have placed the file `My_Library.xml`).
 * To run the script from a music library that is simply organised in folders (for instance `Artist/Album`). Simply copy the path pointing to our music directory (for instance `/Users/user_name/Music/Music/Media/Music`).
 
@@ -64,13 +66,40 @@ python3 -m audio-libraries-tlk --path_to_library_data='/Users/user_name/Music/' 
 ```
 
 
-## To save time on the second run
+#### To save time on the second run
 
 To save time in the case you need to run the script twice and to avoide the full scan of the music files or of the `.xml`file twice, a `.pickle` and a `.csv` file are created by the first scan of the library. These will be reused in the the second call to significantly reduce the time of the second call. 
 
 However, if your music files or `.xml` have changed between the fiorst and the second call, you need to remove the existing `.pickles` and `.csv` are these wont reflect anymore the state of your music library.
 
+### 2. To create MiniDisc Labels
 
+1. Create a playlist from an audio software containing the desired albums.
+2. Save this playlist using `.m3u8` format with a name that contains the word 'MiniDisc' (`MiniDisc.m3u8`for instance) under a path 
+3. Run the command:
+
+```
+python3 -m audio-libraries-tlk --path_to_library_data='/Users/user_name/MD_PL_Location/' --create_minidisc_labels=True
+
+```
+4. Wait for the script to run (on a Mac mini M2 it takes less than 15 seconds for 10 albums)  and review the `.svg` files created iniside `/Users/user_name/MD_PL_Location/MiniDisc-Labels`. It is very likely that some labels will not satisfy you. In particular, long Artist Name or Album Title will overfolw the labels.
+5. To fix long Artist or Album names, open the csv file called 'your-playlist-name_albums.csv (for instance `MiniDisc_album.csv`). There you can modify (in particular shorten/abreviate) the values in the columns 'Display Album','Display Album Artist' (becarefull not to change the column 'Album','Album Artist' ).
+6. You can also use custom text and background colors using any hexadecimal color cof your choice or one of the color (as a string) in the list below.
+7. Run again the command:
+
+```
+python3 -m audio-libraries-tlk --path_to_library_data='/Users/user_name/MD_PL_Location/' --create_minidisc_labels=True
+
+```
+8. Review the updated `.svg` files.
+
+#### Available colors
+```
+'black','sky_blue','blue','blue_steel','blue_green',
+'navy_blue','blue_turquoise','fushia','gold','green',
+'pink','purple_light','purple','orange','red','yellow',
+'white','silver'
+```
 ## Detailed options
 
 
@@ -104,5 +133,8 @@ options:
   --create_special_playlists CREATE_SPECIAL_PLAYLISTS default=False
                         Create some playlists and csv file to underline some aspects of a music
                         library.
-````
+  "--create_minidisc_labels default=False
+                        From an .m3u8 file, create some MiniDisc labels using the cover artwork 
+                        present in the audio library.
+```
 

@@ -6,6 +6,7 @@ import music_tag
 import parameters as param
 from pathlib import Path
 
+import logging
 
 ImageFile.MAXBLOCK = 2**20
 
@@ -38,7 +39,7 @@ def assign_non_prog_artwork_to_song_list(
             assign_artwork_to_song(song_path, image_path)
 
 
-def exctract_artwork(song_path, song_tag, is_any_cover_image, songs_wo_artwork):
+def extract_artwork(song_path, song_tag, is_any_cover_image, songs_wo_artwork):
 
     # @todo understand why 'artwork' can be missing
     try:
@@ -69,6 +70,7 @@ def exctract_artwork(song_path, song_tag, is_any_cover_image, songs_wo_artwork):
 def extension_files_paths(dir_path, extensions):
 
     files = os.listdir(str(dir_path))
+    
 
     files = [
         f
@@ -76,6 +78,7 @@ def extension_files_paths(dir_path, extensions):
         if (True in [f.lower().endswith(form) for form in extensions])
         and not f.startswith("._")
     ]
+
 
     paths = [dir_path / file for file in files]
 
@@ -118,10 +121,10 @@ class EditCoverArtwork:
     def __init__(
         self,
         df_lib,
-        create_cover_jpg=True,
-        create_album_jpg=True,
-        complete_missing_cover_art=True,
-        convert_to_non_prog=True,
+        create_cover_jpg=False,
+        create_album_jpg=False,
+        complete_missing_cover_art=False,
+        convert_to_non_prog=False,
     ):
         self.df_lib = df_lib
         self.create_cover_jpg = create_cover_jpg
@@ -147,7 +150,7 @@ class EditCoverArtwork:
 
             for song_path in music_files_paths:
                 song_tag = music_tag.load_file(song_path)
-                is_any_cover_image, songs_wo_artwork_paths = exctract_artwork(
+                is_any_cover_image, songs_wo_artwork_paths = extract_artwork(
                     song_path, song_tag, is_any_cover_image, songs_wo_artwork_paths
                 )
 
@@ -183,4 +186,4 @@ class EditCoverArtwork:
                     )
 
             elif songs_wo_artwork_paths:
-                print("**** Album wo artwork: ", path_to_album)
+                logging.warning(f'**** Album wo artwork: , {path_to_album}')

@@ -4,6 +4,7 @@ from pathlib import Path
 from lib_scan import LibraryScan
 from processing_lib import LibraryProcessing
 from edit_cover_artwork import EditCoverArtwork
+from create_md_labels import MiniDiscCovers
 
 import argparse
 
@@ -17,6 +18,7 @@ def scan_and_process(
     complete_missing_cover_art=False,
     convert_to_non_prog=False,
     create_special_playlists=False,
+    create_minidisc_labels=False,
 ):
     xml_files = [f for f in os.listdir(path_to_library_data) if f.endswith(".xml")]
 
@@ -84,14 +86,17 @@ def scan_and_process(
         | convert_to_non_prog
     ):
 
-        edit_covers = EditCoverArtwork(df_lib=lib_df)
+        edit_covers = EditCoverArtwork(df_lib=lib_df,
+                                       create_cover_jpg=create_cover_jpg,
+                                        create_album_jpg=create_album_title_jpg,
+                                        complete_missing_cover_art=complete_missing_cover_art,
+                                        convert_to_non_prog=convert_to_non_prog,)
 
-        edit_covers.loop_over_albums_path(
-            create_cover_jpg=create_cover_jpg,
-            create_album_jpg=create_album_title_jpg,
-            complete_missing_cover_art=complete_missing_cover_art,
-            convert_to_non_prog=convert_to_non_prog,
-        )
+        edit_covers.loop_over_albums_path( )
+    if create_minidisc_labels:
+        minidisc_covers = MiniDiscCovers(path_to_music_folder=path_to_music_folder)
+        minidisc_covers.build_md_labels()
+
 
 
 if __name__ == "__main__":
@@ -137,6 +142,10 @@ if __name__ == "__main__":
         "--create_special_playlists", required=False, default=False, help="Create some playlists and csv file to underline some aspects of a music library."
     )
 
+    parser.add_argument(
+        "--create_minidisc_labels", required=False, default=False, help="From an .m3u8 file, create some MiniDisc labels using the cover artwork present in the audio library."
+    )
+
     args = parser.parse_args()
 
     path_to_library_data = args.path_to_library_data
@@ -147,6 +156,7 @@ if __name__ == "__main__":
     complete_missing_cover_art = args.complete_missing_cover_art
     convert_to_non_prog = args.convert_to_non_prog
     create_special_playlists = args.create_special_playlists
+    create_minidisc_labels=args.create_minidisc_labels
 
     scan_and_process(
         path_to_library_data,
@@ -157,4 +167,5 @@ if __name__ == "__main__":
         complete_missing_cover_art,
         convert_to_non_prog,
         create_special_playlists,
+        create_minidisc_labels,
     )

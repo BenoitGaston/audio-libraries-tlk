@@ -11,20 +11,31 @@ def group_by_cd(x):
     Args:
         x (_type_): _description_
     """
-    try:
+    if "Total Time" in x.columns:
         total_duration = np.sum(x["Total Time"])
-    except:
+    else:
         total_duration = -1
-    try:
+    if "Size" in x.columns:
         size = sum(x["Size"].astype(int))
-    except:
+    else:
         size = -1
-
-    mean_bit_rate = np.mean(x["Bit Rate"].astype(int))
+    if "it Rate" in x.columns:
+        mean_bit_rate = np.mean(x["Bit Rate"].astype(int))
+    else:
+        mean_bit_rate=0
     num_track = len(x)
 
-    min_track = np.min(x["Track Number"])
-    max_track = np.max(x["Track Number"])
+    if "Track Number" in x.columns:
+
+        min_track = np.min(x["Track Number"])
+        max_track = np.max(x["Track Number"])
+        track_num_delta = max_track + 1 - min_track
+        all_track_present = track_num_delta == num_track
+    else:
+        min_track = 0
+        max_track = 0
+        track_num_delta = None
+        all_track_present = None
     if "Rating" in x.columns:
         min_rating = np.min(x["Rating"])
         max_rating = np.max(x["Rating"])
@@ -33,11 +44,23 @@ def group_by_cd(x):
         min_rating = None
         max_rating = None
         avg_rating = None
-    track_num_delta = max_track + 1 - min_track
-    all_track_present = track_num_delta == num_track
+
+    
     album_type = x.Kind.mode()[0]
-    album_genre = x.Genre.mode()[0]
-    album_multi_genre = len(x["Genre"].unique()) > 1
+    if "Year"in x.columns:
+        try:
+            album_year = x.Year.mode()[0]
+        except:
+            album_year = None
+
+    else:
+        album_year=None
+    if "Genre"in x.columns:
+        album_multi_genre = len(x["Genre"].unique()) > 1
+        album_genre = x.Genre.mode()[0]
+    else:
+        album_multi_genre = None
+        album_genre = None
 
     album_location = x["Album Location"].mode()[0]
     album_multi_location = len(x["Album Location"].unique()) > 1
@@ -52,6 +75,7 @@ def group_by_cd(x):
             "CD Bit Rate": mean_bit_rate,
             "CD Files Kind": album_type,
             "CD Location": album_location,
+            "CD Year": album_year,
             "CD Has Multiple Locations": album_multi_location,
             "CD Genre": album_genre,
             "CD Has Multiple Genre": album_multi_genre,
@@ -66,10 +90,12 @@ def group_by_cd(x):
 
 class LibraryProcessing:
 
-    def __init__(self, df_lib, path_to_playlist_folder):
+    def __init__(self,  path_to_playlist_folder,df_lib=None):
 
         self.df_lib = df_lib
         self.path_to_playlist_folder = path_to_playlist_folder
+        if type(self.path_to_playlist_folder)==str:
+            self.path_to_playlist_folder = Path(self.path_to_playlist_folder)
 
         if not os.path.isdir(self.path_to_playlist_folder):
 
@@ -115,7 +141,7 @@ class LibraryProcessing:
         self.split_library_by_resolution()
         self.split_library_by_format()
 
-    def get_grouped_df(self, disc_or_album="Album"):
+    def get_grouped_df(self, path_to_destination = None, disc_or_album="Album"):
         """_summary_
 
         Args:
@@ -125,15 +151,25 @@ class LibraryProcessing:
         Returns:
             _type_: _description_
         """
+        if path_to_destination is None:
+
+            path_to_destination = self.path_to_playlist_folder / "Special_Playlists"
         df_lib = self.df_lib.copy()
-        df_lib.loc[:, "Album"] = df_lib["Album"].apply(lambda x: str(x).strip())
-        df_lib.loc[:, "Album Artist"] = df_lib["Album Artist"].apply(
-            lambda x: str(x).strip()
-        )
+        df_lib.loc[:, "Album"] = df_lib.loc[:,"Album"].apply(lambda x: str(x).strip())
+        #df_lib.loc[:, "Album Artist"] = df_lib.loc[:, "Album Artist"].fillna(df_lib.loc[:,"Artist"])
+        #df_lib.loc[:, "Album Artist"] = df_lib.loc[:,"Album Artist"].apply(
+        #    lambda x: str(x).strip()
+        #)
 
         df_lib.loc[:, "Track Number"] = df_lib.loc[:, "Track Number"].fillna(0)
         df_lib.loc[:, "Track Number"] = df_lib.loc[:, "Track Number"].replace("", 0)
         df_lib.loc[:, "Track Number"] = df_lib.loc[:, "Track Number"].astype(int)
+
+        df_lib.loc[:, "Size"] = df_lib.loc[:, "Size"].fillna(df_lib.loc[:, "Bit Rate"]
+                                                             *df_lib.loc[:, "Total Time"])
+        
+        #df_lib.loc[:, "Year"] = df_lib.loc[:, "Year"].fillna(0)
+        
 
         group_features = [
             "Album",
@@ -157,7 +193,7 @@ class LibraryProcessing:
             + [col for col in df_lib.columns if col not in grouped_df.columns]
         ].merge(grouped_df, on=group_features)
         grouped_df.to_csv(
-            self.path_to_playlist_folder / f"Special_Playlists/{disc_or_album}.csv"
+            path_to_destination/f"{disc_or_album}.csv"
         )
 
         return grouped_df

@@ -7,7 +7,7 @@ allow-direct-references = true
 
 [project]
 name = "audio-libraries-tlk"
-version = "1.1.4"
+version = "1.1.5"
 authors = [
   { name="Benoît Gaston", email="benoitgaston59@gmail.com" },
 ]

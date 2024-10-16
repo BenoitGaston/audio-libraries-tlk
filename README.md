@@ -142,4 +142,11 @@ options:
                         From an .m3u8 file, create some MiniDisc labels using the cover artwork 
                         present in the audio library.
 ```
+## Labels examples
+![MD-outer-labels-examples](https://github.com/user-attachments/assets/87745c31-d388-499f-9304-5c387af9c975)
+
+![MD-inner-labels-examples](https://github.com/user-attachments/assets/c8d5cb68-64e5-4982-bd96-3b54931a0c7e)
+
+
+
 

@@ -6,9 +6,13 @@ A set of Python tools to explore and modify data contained in a music library su
 
 https://pypi.org/project/audio-libraries-tlk/
 
+## Link to sourec code
+
+https://github.com/BenoitGaston/audio-libraries-tlk
+
 ## Acknowledgments
 
-This project is heavily relying on, on the one hand Scholnicks' [itunesLibrary](https://pypi.org/project/iTunesLibrary/) (it self a port of Drew Stephen's [Mac-iTunes-Library](https://github.com/dinomite/Mac-iTunes-Library)), on the other hand on KristoforMaynard's [music-tag](https://pypi.org/project/music-tag/)
+This project is heavily relying on, on the one hand Scholnicks' [itunesLibrary](https://pypi.org/project/iTunesLibrary/) (it self a port of Drew Stephen's [Mac-iTunes-Library](https://github.com/dinomite/Mac-iTunes-Library)), on the other hand on KristoforMaynard's [music-tag](https://pypi.org/project/music-tag/).
 
 ## Usecases
 
@@ -62,7 +66,7 @@ The `.m3u8`, `.csv` and `.pickle`files created by the script will be located ins
 Then, for instance, to extract all the playlists contained in your music library, convert them into a format readable by a new audio device, and create a `cover.jpg` file for inside each album folder, run the command:
 
 ```
-python3 -m audio-libraries-tlk --path_to_library_data='/Users/user_name/Music/' --orginal_path_written_in_playlists='/Users/user_name/Music/' --updated_path_written_in_playlists='/home/Music/' --create_cover_jpg=True
+python3 -m audio_-libraries-tlk --path_to_library_data='/Users/user_name/Music/' --orginal_path_written_in_playlists='/Users/user_name/Music/' --updated_path_written_in_playlists='/home/Music/' --create_cover_jpg=True
 ```
 
 
@@ -79,7 +83,7 @@ However, if your music files or `.xml` have changed between the fiorst and the s
 3. Run the command:
 
 ```
-python3 -m audio-libraries-tlk --path_to_library_data='/Users/user_name/MD_PL_Location/' --create_minidisc_labels=True
+python3 -m audio_libs_tlk --path_to_library_data='/Users/user_name/MD_PL_Location/' --create_minidisc_labels=True
 
 ```
 4. Wait for the script to run (on a Mac mini M2 it takes less than 15 seconds for 10 albums)  and review the `.svg` files created iniside `/Users/user_name/MD_PL_Location/MiniDisc-Labels`. It is very likely that some labels will not satisfy you. In particular, long Artist Name or Album Title will overfolw the labels.
@@ -88,7 +92,7 @@ python3 -m audio-libraries-tlk --path_to_library_data='/Users/user_name/MD_PL_Lo
 7. Run again the command:
 
 ```
-python3 -m audio-libraries-tlk --path_to_library_data='/Users/user_name/MD_PL_Location/' --create_minidisc_labels=True
+python3 -m audio_libs_tlk --path_to_library_data='/Users/user_name/MD_PL_Location/' --create_minidisc_labels=True
 
 ```
 8. Review the updated `.svg` files.

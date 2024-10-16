@@ -12,7 +12,7 @@ https://github.com/BenoitGaston/audio-libraries-tlk
 
 ## Acknowledgments
 
-This project is heavily relying on, on the one hand Scholnicks' [itunesLibrary](https://pypi.org/project/iTunesLibrary/) (it self a port of Drew Stephen's [Mac-iTunes-Library](https://github.com/dinomite/Mac-iTunes-Library)), on the other hand on KristoforMaynard's [music-tag](https://pypi.org/project/music-tag/).
+This project is heavily relying on, on the one hand Scholnicks' [itunesLibrary](https://pypi.org/project/iTunesLibrary/) (itself a port of Drew Stephen's [Mac-iTunes-Library](https://github.com/dinomite/Mac-iTunes-Library)), on the other hand on KristoforMaynard's [music-tag](https://pypi.org/project/music-tag/).
 
 ## Usecases
 
@@ -22,6 +22,7 @@ This project originates from the following needs:
 2. Convert cover artwork of songs to non-prog images.
 3. Explore inconsistencies in a music library (incomplete albums, songs placed in the wrong location, etc).
 4. These would be possible for both an iTunes or Apple Music managed library and a library managed by hand in folders.
+5. Use playlists and existing cover artworks to create MiniDisc labels.
 
 ## How to install
 

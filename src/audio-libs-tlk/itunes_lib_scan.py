@@ -175,7 +175,7 @@ class iTunesLibraryScan:
             df_lib = pd.read_csv(
                 self.path_to_dest_folder / csv_name
             )  # ,dtype = dtype_dict)
-            print(df_lib.iloc[:, [30]].columns)
+
 
         else:
             # must first parse...

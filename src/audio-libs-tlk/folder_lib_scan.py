@@ -46,6 +46,7 @@ def loop_over_a_music_path(music_lib_path):
     suffixes = music_extentions
 
     for album_path, _, filenames in os.walk(music_lib_path):
+        print('Scanning Album Located at ', album_path)
 
         for song_file in filenames:
             if os.path.splitext(song_file)[1].lower() in suffixes:

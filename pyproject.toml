@@ -1,13 +1,13 @@
 [build-system]
-requires = ["pdm-backend"]
-build-backend = "pdm.backend"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [tool.hatch.metadata]
 allow-direct-references = true
 
 [project]
-name = "audio-libraries-tlk"
-version = "1.1.5"
+name = "audio-libs-tlk"
+version = "1.1.14"
 authors = [
   { name="Benoît Gaston", email="benoitgaston59@gmail.com" },
 ]
@@ -29,3 +29,9 @@ Issues = "https://github.com/BenoitGaston/audio-libraries-tlk/issues"
 [tool.pytest.ini_options]
 pythonpath = "src"
 
+[tool.setuptools.packages.find]
+where = ["./src/"]
+
+
+[project.scripts]
+audio-libs-tlk-minidisc = "main_minidisc_cli:main"

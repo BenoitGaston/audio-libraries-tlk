@@ -1,3 +1,17 @@
+Metadata-Version: 2.1
+Name: audio-libs-tlk
+Version: 1.1.14
+Summary: A package to extract and manipulate data contained in a music library such as playlists or album cover artwork.
+Author-email: Benoît Gaston <benoitgaston59@gmail.com>
+Project-URL: Homepage, https://github.com/BenoitGaston/audio-libraries-tlk
+Project-URL: Issues, https://github.com/BenoitGaston/audio-libraries-tlk/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: GNU General Public License v3 (GPLv3)
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENCE
+
 # audio-libraries-tlk
 
 A set of Python tools to explore and modify data contained in a music library such as playlists or album cover artwork. 

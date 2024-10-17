@@ -3,7 +3,7 @@ import sys
 
 sys.path.append("../src")
 
-import src.audio_libraries_tlk.lib_scan as ls
+import src.audio-libs-tlk.lib_scan as ls
 
 
 class TestTLK:

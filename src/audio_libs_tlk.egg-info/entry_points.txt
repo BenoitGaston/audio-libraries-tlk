@@ -1,0 +1,2 @@
+[console_scripts]
+audio-libs-tlk-minidisc = main_minidisc_cli:main

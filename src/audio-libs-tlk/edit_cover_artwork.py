@@ -60,7 +60,7 @@ def extract_artwork(song_path, song_tag, is_any_cover_image, songs_wo_artwork):
         if not is_any_cover_image:
             image = song_tag["artwork"].first.data
 
-            save_image(image, song_path.parents[0], song_tag["title"])
+            save_image(image, song_path.parents[0], str(song_tag["title"]).replace('/','_'))
 
             is_any_cover_image = True
 
@@ -133,6 +133,9 @@ class EditCoverArtwork:
     def loop_over_albums_path(self):
 
         paths_to_albums = list(self.df_lib.loc[:, "Album Location"].unique())
+
+        print('Processing Album Covers Located at ', paths_to_albums)
+
 
         for path_to_album in paths_to_albums:
             path_to_album = Path(path_to_album)

@@ -7,7 +7,7 @@ allow-direct-references = true
 
 [project]
 name = "audio-libs-tlk"
-version = "1.1.14"
+version = "1.1.15"
 authors = [
   { name="Benoît Gaston", email="benoitgaston59@gmail.com" },
 ]
@@ -30,8 +30,10 @@ Issues = "https://github.com/BenoitGaston/audio-libraries-tlk/issues"
 pythonpath = "src"
 
 [tool.setuptools.packages.find]
-where = ["./src/"]
+where = ["./src/",]
 
+[tool.setuptools.package-data]
+"*" = ["*.*"]
 
 [project.scripts]
 audio-libs-tlk-minidisc = "main_minidisc_cli:main"

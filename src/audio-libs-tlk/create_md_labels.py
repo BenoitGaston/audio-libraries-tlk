@@ -151,7 +151,7 @@ def update_temp_svgs(substitution_dict, path_to_temp_files_folder):
     open(path_to_temp_files_folder / f"temp-0.svg", "w").write(
         open(path_to_temp_files_folder / f"temp-1.svg").read()
     )
-    i = 1
+    i = 0
 
     for key in substitution_dict.keys():
 
@@ -205,8 +205,8 @@ def create_substitucion_dict(one_page_md_labels_df, image_dict):
 
     substitution_dict = {}
 
-    for md_id, row in one_page_md_labels_df.iterrows():
-
+    for df_md_id, row in one_page_md_labels_df.iterrows():
+        md_id = df_md_id+1
         theme = get_theme(row)
         dict_of_styles = built_dict_of_styles(theme)
 
@@ -377,19 +377,19 @@ class MiniDiscCovers:
             mini_disc_album_df.loc[:, "text_color"] = None
 
             odered_columns = [
-                "Album",
-                "Album Artist",
                 "Display Album",
                 "Display Album Artist",
                 "background_color",
                 "text_color",
                 "Album Year",
-                "Album Total Time",
                 "Album Genre",
+                "Album Total Time",
                 "Num Tracks",
                 "Album Has Multiple Locations",
                 "Album Has Multiple Genre",
                 "Album Location",
+                "Album",
+                "Album Artist",
             ]
             mini_disc_album_df.loc[:, "Album Artist"] = mini_disc_album_df.loc[:, "Album Artist"].fillna(mini_disc_album_df.loc[:,"Album Principal Artist"])
 
@@ -524,24 +524,22 @@ class MiniDiscCovers:
 
         for i in range(len(list_num_pages)):
 
-            number_of_labels_per_page = list_num_pages[i] + 1
+            number_of_labels_per_page = list_num_pages[i]
 
             template_name = template_names[i]
             path_to_templates = Path(__file__).parent.resolve() / "MiniDisc-Templates"
 
             total_number_of_pages = int(
-                len(self.mini_disc_album_df) / number_of_labels_per_page
+                len(self.mini_disc_album_df) / (number_of_labels_per_page+1)
             )
 
             for page_id in range(0, total_number_of_pages + 1):
 
                 one_page_md_labels_df = self.mini_disc_album_df.iloc[
-                    (page_id * number_of_labels_per_page) : np.min(
-                        [
-                            (page_id + 1) * number_of_labels_per_page,
-                            len(self.mini_disc_album_df),
-                        ]
-                    )
+                    (page_id * number_of_labels_per_page) : (page_id + 1) * number_of_labels_per_page
+                            #len(self.mini_disc_album_df),
+                        
+                    
                 ]
 
                 one_page_md_labels_df = pd.concat(

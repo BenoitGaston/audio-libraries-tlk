@@ -1,6 +1,6 @@
 # audio-libraries-tlk
 
-A set of Python tools to explore and modify data contained in a music library such as playlists or album cover artwork. 
+A set of Python tools and of 2 Streamlit apps to explore and modify data contained in a music library such as playlists or album cover artwork. 
 
 ## Links to
 
@@ -9,13 +9,13 @@ A set of Python tools to explore and modify data contained in a music library su
 
 ## Acknowledgments
 
-This project is heavily relying on, on the one hand Scholnicks' [itunesLibrary](https://pypi.org/project/iTunesLibrary/) (itself a port of Drew Stephen's [Mac-iTunes-Library](https://github.com/dinomite/Mac-iTunes-Library)), on the other hand on KristoforMaynard's [music-tag](https://pypi.org/project/music-tag/).
+This project is heavily relying on, on the one hand Scholnicks' [itunesLibrary](https://pypi.org/project/iTunesLibrary/) (itself a port of Drew Stephen's [Mac-iTunes-Library](https://github.com/dinomite/Mac-iTunes-Library)), on the other hand on KristoforMaynard's [music-tag](https://pypi.org/project/music-tag/). The template used to create MiniDisc inner labels is coming from [MiniDisc Wiki](https://www.minidisc.wiki/resources/labels)
 
 ## Usecases
 
 This project originates from the following needs:
 
-1. Transfering playlists from different audio devices.
+1. Transferring playlists from different audio devices.
 2. Convert cover artwork of songs to non-prog images.
 3. Explore inconsistencies in a music library (incomplete albums, songs placed in the wrong location, etc).
 4. These would be possible for both an iTunes or Apple Music managed library and a library managed by hand in folders.
@@ -55,34 +55,44 @@ cd audio-libraries-tlk-master
 
 * Running the playlists components of the script should be safe as these don't imply modifying your music library but just extract some playlists and create new ones.
 
-* Running the cover artwork options is much more risky as the script will potentially modify the cover artworks inside your music files. If your music files are not properly splited by album (two songs of different albums are present in the same folder) then you the cover artworks of the two albums will be mixed (one will replace the other). In other word, the script assumes that songs in the same location belong to the same album.  In case of doubt, you can start by running the script with all the cover artwork options set as `False` (the default case) and with the option `--create_special_playlists==True`. This will produce a csv file showing all the locations containing songs of multiple albums.
+* Running the cover artwork options is much more risky as the script will potentially modify the cover artworks inside your music files. If your music files are not properly split by album (two songs of different albums are present in the same folder) then you the cover artworks of the two albums will be mixed (one will replace the other). In other word, the script assumes that songs in the same location belong to the same album.  In case of doubt, you can start by running the script with all the cover artwork options set as `False` (the default case) and with the option `Create special playlists` option as True. This will produce a csv file showing all the locations containing songs of multiple albums.
 
-* Again try the script on a small duplicated sample of your music files and check if the reasult pleases you.
+* Again try the script on a small duplicated sample of your music files and check if the result pleases you.
 
 ## Be patient
 
 Depending on the option you choose the script can take a long time to run: up to ~1 hour for 1 30k songs library on a mac mini M2.
 
-**To save time in the case you need to run the script twice** and to avoide the full scan of the music files or of the .xml file twice, a .pickle and a .csv file are created by the first scan of the library. These will be reused in the the second call to significantly reduce the time of the second call. 
+**To save time in the case you need to run the script twice** and to avoid the full scan of the music files or of the .xml file twice, a .pickle and a .csv file are created by the first scan of the library. These will be reused in the the second call to significantly reduce the time of the second call. 
 
-However, if your music files or .xml have changed between the fiorst and the second call, you need to remove the existing .pickles and .csv are these wont reflect anymore the state of your music library.
+However, if your music files or .xml have changed between the first and the second call, you need to remove the existing .pickles and .csv are these wont reflect anymore the state of your music library.
 
 ## Outputs
 
-The `.m3u8`, `.csv` and `.pickle`files created by the script will be located inside the `PATH_TO_LIBRARY_DATA`.
+* The `.m3u8`, `.csv` and `.pickle`files created by the script will be located inside the `PATH_TO_LIBRARY_DATA`. 
+* Image files extracted from your music metadata will be located in the album folders.
+* MiniDisc labels will be located in a folder created next to your `MiniDisc.m3u8` file
 
 
 ## How to run
 
-### 1. For general Library Scan and cover Artwork update
-* To run the script from an iTunes or Apple Music, first go to `setting/Library/Export Library`. Save the `.xml` file in a folder and copy this path (for instance `/Users/user_name/Music/` where you have placed the file `My_Library.xml`).
-* To run the script from a music library that is simply organised in folders (for instance `Artist/Album`). Simply copy the path pointing to our music directory (for instance `/Users/user_name/Music/Music/Media/Music`).
+### 1. Library Scan and cover Artwork update
+* To run the app from an iTunes or Apple Music, first go to `setting/Library/Export Library` and save your library as `.xml`.
+* To run the script from a music library that is organised in folders (for instance `Artist/Album`), you will just need the path to your music directory (for instance `/Users/user_name/Music/Music/Media/Music`).
 
-In terminal run:
+In terminal navigate to your `audio-libraries-tlk-master` folder and run:
+
+```
+source .venv/bin/activate
+```
+
+Once your virtual env is activated run:
 
 ```
 streamlit run audio_library_scan_app.py
 ```
+
+If the app doesn't start automatically, open your browser and navigate to [http://localhost:8501](http://localhost:8501).
 
 #### To save time on the second run
 
@@ -90,18 +100,26 @@ To save time in the case you need to run the script twice and to avoid the full 
 
 However, if your music files or `.xml` have changed between the first and the second call, you need to remove the existing `.pickles` and `.csv` are these wont reflect anymore the state of your music library.
 
-### 2. To create MiniDisc Labels
+### 2. MiniDisc Labels
 
 1. Create a playlist from an audio software containing the desired albums.
 2. Save this playlist using `.m3u8` format with a name that contains the word 'MiniDisc' (`MiniDisc.m3u8`for instance).
 3. Run the command:
 
+In terminal navigate to your `audio-libraries-tlk-master` folder and run:
 
+```
+source .venv/bin/activate
+```
+
+Once your virtual env is activated run:
 ```
 streamlit run minidisc_labels_app.py
 ```
 
-#### Available colors
+If the app doesn't start automatically, open your browser and navigate to [http://localhost:8501](http://localhost:8501).
+
+#### Available colors for MiniDIsc labels
 ```
 'black','sky_blue','blue','blue_steel','blue_green',
 'navy_blue','blue_turquoise','fushia','gold','green',
@@ -127,17 +145,17 @@ options:
                         know what to use.
   --create_cover_jpg CREATE_COVER_JPG default=False
                         If True an image file called 'cover.jpg' will be created inside each
-                        location containig some music files. Only 1 file will be created per
-                        location. Even if two songs have distinct coverart
+                        location containing some music files. Only 1 file will be created per
+                        location. Even if two songs have distinct cover art
   --create_album_title_jpg CREATE_ALBUM_TITLE_JPG default=False
                         If True an image file called 'title of the album.jpg' will be created
-                        inside each location containig some music files. Only 1 file will be
-                        created per location. Even if two songs have distinct coverart
+                        inside each location containing some music files. Only 1 file will be
+                        created per location. Even if two songs have distinct cover art
   --complete_missing_cover_art COMPLETE_MISSING_COVER_ART default=False
-                        Use the coverart of a song (any arbitrary one) conatinied in the same
-                        location to fil all the missing coverarts
+                        Use the cover art of a song (any arbitrary one) contained in the same
+                        location to fil all the missing cover arts
   --convert_to_non_prog CONVERT_TO_NON_PROG default=False
-                        Convert the coverarts to non-prog images.
+                        Convert the cover arts to non-prog images.
   --create_special_playlists CREATE_SPECIAL_PLAYLISTS default=False
                         Create some playlists and csv file to underline some aspects of a music
                         library.
@@ -145,7 +163,10 @@ options:
                         From an .m3u8 file, create some MiniDisc labels using the cover artwork 
                         present in the audio library.
 ```
+## Apps Screenshots
+
 ## Labels examples
+![MD-inner-labels-examples](https://github.com/user-attachments/assets/c8d5cb68-64e5-4982-bd96-3b54931a0c7e)
 ![MD-outer-labels-examples](https://github.com/user-attachments/assets/87745c31-d388-499f-9304-5c387af9c975)
 
 ![MD-inner-labels-examples](https://github.com/user-attachments/assets/c8d5cb68-64e5-4982-bd96-3b54931a0c7e)

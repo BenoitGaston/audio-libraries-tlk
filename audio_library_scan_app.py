@@ -16,11 +16,11 @@ def main():
         updated_path_written_in_playlists = st.text_input("Part to be used in the new music location (for instance '/home/sony/walkman/Music'). Open an m3u8 playlist with a text editor to know what to use.", value="")
         
         # Additional binary (checkbox) arguments
-        create_cover_jpg = st.checkbox("If True an image file called 'cover.jpg' will be created inside each location containig some music files. Only 1 file will be created per location. Even if two songs have distinct coverart", value=False)
-        create_album_title_jpg = st.checkbox("If True an image file called 'title of the album.jpg' will be created inside each location containig some music files. Only 1 file will be created per location. Even if two songs have distinct coverart", value=False)
-        complete_missing_cover_art = st.checkbox("Use the coverart of a song (any arbitrary one) conatinied in the same location to fil all the missing coverarts", value=False)
-        convert_to_non_prog = st.checkbox("Convert the coverarts to non-prog images.", value=False)
-        create_special_playlists = st.checkbox("Create some playlists and csv file to underline some aspects of a music library.", value=False)
+        create_cover_jpg = st.checkbox("Create cover.jpg: If True an image file called 'cover.jpg' will be created inside each location containing some music files. Only 1 file will be created per location. Even if two songs have distinct coverart", value=False)
+        create_album_title_jpg = st.checkbox("Create album_title.jpg: If True an image file called 'title of the album.jpg' will be created inside each location containing some music files. Only 1 file will be created per location. Even if two songs have distinct coverart", value=False)
+        complete_missing_cover_art = st.checkbox("Complete missing cover art: Use the cover art of a song (any arbitrary one) contained in the same location to fil all the missing coverarts", value=False)
+        convert_to_non_prog = st.checkbox("Convert the cover arts to non-prog images.", value=False)
+        create_special_playlists = st.checkbox("Create special playlists: Will generate .m3u8 and csv files to underline some aspects of a music library.", value=False)
         
         
         # Run button
@@ -43,7 +43,8 @@ def main():
                 st.session_state.confirmation_needed = False
 
                 st.success(f"The scan of your library has happened properly")
-                st.success(f"If you have extracted")
+                st.success(f"If you have chosen to extract some image files from your music, they are now located the album folders.")
+                st.success(f"If you have chosen to generate some playlists, they are now located in {path_to_library_data}/Playlists.")
 
             elif st.button("Cancel"):
                 st.session_state.confirmation_needed = False

@@ -81,7 +81,7 @@ The `.m3u8`, `.csv` and `.pickle`files created by the script will be located ins
 In terminal run:
 
 ```
-audio_library_scan_app
+streamlit run audio_library_scan_app.py
 ```
 
 #### To save time on the second run
@@ -96,10 +96,9 @@ However, if your music files or `.xml` have changed between the first and the se
 2. Save this playlist using `.m3u8` format with a name that contains the word 'MiniDisc' (`MiniDisc.m3u8`for instance).
 3. Run the command:
 
-In terminal run:
 
 ```
-minidisc_labels_app
+streamlit run minidisc_labels_app.py
 ```
 
 #### Available colors

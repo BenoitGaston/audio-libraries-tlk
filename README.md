@@ -30,9 +30,9 @@ Before starting, ensure you have Python 3.8 or higher installed ([Download Pytho
 
 ```
 wget https://github.com/BenoitGaston/audio-libraries-tlk/archive/refs/heads/master.zip
-unzip main.zip
-cd audio-libraries-tlk
-chmod +x install.sh  # Make the script executable
+unzip master.zip
+cd audio-libraries-tlk-master
+chmod +x install.sh
 ./install.sh
 ```
 
@@ -40,10 +40,9 @@ chmod +x install.sh  # Make the script executable
 
 ```
 curl https://github.com/BenoitGaston/audio-libraries-tlk/archive/refs/heads/master.zip
-unzip main.zip
-cd audio-libraries-tlk
-chmod +x install.sh  # Make the script executable
-./install.sh
+unzip master.zip
+cd audio-libraries-tlk-master
+./install.bat
 ```
 
 ## Warnings

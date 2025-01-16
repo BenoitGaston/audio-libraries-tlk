@@ -1,6 +1,6 @@
 import streamlit as st
 
-from  .src.audio_libs_tlk.lib_scan import scan_and_process
+from  src.audio_libs_tlk.lib_scan import scan_and_process
 
 
 

@@ -1,9 +1,6 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0","wheel"]
 build-backend = "setuptools.build_meta"
-
-[tool.hatch.metadata]
-allow-direct-references = true
 
 [project]
 name = "audio-libraries-tlk"
@@ -11,10 +8,6 @@ version = "1.2.0"
 authors = [
   { name="Benoît Gaston", email="benoitgaston59@gmail.com" },
 ]
-packages = [
-    { include = "audio_libs_tlk", from = "src" }  # Specifies that 'audio_libs_tlk' is in the 'src' folder
-]
-
 description = "A package to extract and manipulate data contained in a music library such as playlists or album cover artwork."
 
 readme = "README.md"
@@ -37,9 +30,3 @@ where = ["./src/",]
 
 [tool.setuptools.package-data]
 "*" = ["*.*"]
-
-[tool.setuptools.entry_points]
-console_scripts = [
-    "audio_library_scan_app = audio_libs_tlk.audio_library_scan_app:main",  # Entry point for the first app
-    "minidisc_labels_app = audio_libs_tlk.minidisc_labels_app:main",   # Entry point for the second app
-]

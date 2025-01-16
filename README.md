@@ -28,7 +28,13 @@ Before starting, ensure you have Python 3.8 or higher installed ([Download Pytho
 In terminal run:
 
 ```
-python3 -m pip install audio-libraries-tlk
+wget https://github.com/BenoitGaston/audio-libraries-tlk/archive/refs/heads/master.ziparchive/refs/heads/main.zip
+unzip main.zip
+cd audio-libraries-tlk
+pip install uv
+uv venv
+source .venve/bin/activate
+uv pip install -r requirements
 ```
 
 ## Warnings

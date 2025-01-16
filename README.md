@@ -25,16 +25,25 @@ This project originates from the following needs:
 
 Before starting, ensure you have Python 3.8 or higher installed ([Download Python here](https://www.python.org/downloads/)).
 
-In terminal run:
+### on Linux/Mac run:
+
 
 ```
-wget https://github.com/BenoitGaston/audio-libraries-tlk/archive/refs/heads/master.ziparchive/refs/heads/main.zip
+wget https://github.com/BenoitGaston/audio-libraries-tlk/archive/refs/heads/master.zip
 unzip main.zip
 cd audio-libraries-tlk
-pip install uv
-uv venv
-source .venve/bin/activate
-uv pip install -r requirements
+chmod +x install.sh  # Make the script executable
+./install.sh
+```
+
+### on Windows run:
+
+```
+curl https://github.com/BenoitGaston/audio-libraries-tlk/archive/refs/heads/master.zip
+unzip main.zip
+cd audio-libraries-tlk
+chmod +x install.sh  # Make the script executable
+./install.sh
 ```
 
 ## Warnings

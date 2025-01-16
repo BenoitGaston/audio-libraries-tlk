@@ -26,10 +26,14 @@ This project originates from the following needs:
 
 ## How to install
 
-Through pip
+Before starting, ensure you have the following installed on your computer:
+
+1. **Python 3.8 or higher**: [Download Python here](https://www.python.org/downloads/).
+
 ```
 python3 -m pip install audio-libraries-tlk
 ```
+
 ## Warnings
 
 **In general:**

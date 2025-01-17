@@ -164,6 +164,8 @@ options:
                         present in the audio library.
 ```
 ## Apps Screenshots
+<img width="993" alt="Screenshot 2025-01-16 at 15 54 18" src="https://github.com/user-attachments/assets/5640e513-dacc-4933-b316-2da012ebf84c" />
+<img width="992" alt="Screenshot 2025-01-16 at 15 54 52" src="https://github.com/user-attachments/assets/cc6e1132-0ee2-4d1f-9a0f-331f7ef6846a" />
 
 ## Labels examples
 ![MD-inner-labels-examples](https://github.com/user-attachments/assets/c8d5cb68-64e5-4982-bd96-3b54931a0c7e)

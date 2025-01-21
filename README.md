@@ -1,11 +1,13 @@
 # audio-libraries-tlk
 
-A set of Python tools and of 2 Streamlit apps to explore and modify data contained in a music library such as playlists or album cover artwork. 
+A set of Python tools to explore and modify data contained in a music library such as playlists or album cover artwork. 
 
 ## Links to
 
 * [PyPi package](https://pypi.org/project/audio-libraries-tlk/)
 * [Source code](https://github.com/BenoitGaston/audio-libraries-tlk)
+*  A[streamlit app](https://github.com/BenoitGaston/Audio-Libraries-Scan-App) using this package for exploring and modifying data contained in a music library. 
+* A [streamlit app](https://github.com/BenoitGaston/MiniDisc-Labels-App) using this package to create MiniDisc Labels. 
 
 ## Acknowledgments
 
@@ -19,31 +21,15 @@ This project originates from the following needs:
 2. Convert cover artwork of songs to non-prog images.
 3. Explore inconsistencies in a music library (incomplete albums, songs placed in the wrong location, etc).
 4. These would be possible for both an iTunes or Apple Music managed library and a library managed by hand in folders.
-5. Use playlists and existing cover artworks to create MiniDisc labels.
+
 
 ## How to install
 
-Before starting, ensure you have Python 3.8 or higher installed ([Download Python here](https://www.python.org/downloads/)).
-
-### on Linux/Mac run:
-
-
+Through pip
 ```
-wget https://github.com/BenoitGaston/audio-libraries-tlk/archive/refs/heads/master.zip
-unzip master.zip
-cd audio-libraries-tlk-master
-chmod +x install.sh
-./install.sh
+python3 -m pip install audio-libraries-tlk
 ```
 
-### on Windows run:
-
-```
-curl https://github.com/BenoitGaston/audio-libraries-tlk/archive/refs/heads/master.zip
-unzip master.zip
-cd audio-libraries-tlk-master
-./install.bat
-```
 
 ## Warnings
 
@@ -71,63 +57,26 @@ However, if your music files or .xml have changed between the first and the seco
 
 * The `.m3u8`, `.csv` and `.pickle`files created by the script will be located inside the `PATH_TO_LIBRARY_DATA`. 
 * Image files extracted from your music metadata will be located in the album folders.
-* MiniDisc labels will be located in a folder created next to your `MiniDisc.m3u8` file
-
 
 ## How to run
 
-### 1. Library Scan and cover Artwork update
-* To run the app from an iTunes or Apple Music, first go to `setting/Library/Export Library` and save your library as `.xml`.
-* To run the script from a music library that is organised in folders (for instance `Artist/Album`), you will just need the path to your music directory (for instance `/Users/user_name/Music/Music/Media/Music`).
+* To run the script from an iTunes or Apple Music, first go to `setting/Library/Export Library`. Save the `.xml` file in a folder and copy this path (for instance `/Users/user_name/Music/` where you have placed the file `My_Library.xml`).
+* To run the script from a music library that is simply organised in folders (for instance `Artist/Album`). Simply copy the path pointing to our music directory (for instance `/Users/user_name/Music/Music/Media/Music`).
 
-In terminal navigate to your `audio-libraries-tlk-master` folder and run:
-
-```
-source .venv/bin/activate
-```
-
-Once your virtual env is activated run:
+Then, for instance, to extract all the playlists contained in your music library, convert them into a format readable by a new audio device, and create a `cover.jpg` file for inside each album folder, run the command:
 
 ```
-streamlit run audio_library_scan_app.py
+python3 -m audio-libs-tlk --path_to_library_data='/Users/user_name/Music/' --orginal_path_written_in_playlists='/Users/user_name/Music/' --updated_path_written_in_playlists='/home/Music/' --create_cover_jpg=True
 ```
 
-If the app doesn't start automatically, open your browser and navigate to [http://localhost:8501](http://localhost:8501).
 
 #### To save time on the second run
 
-To save time in the case you need to run the script twice and to avoid the full scan of the music files or of the `.xml`file twice, a `.pickle` and a `.csv` file are created by the first scan of the library. These will be reused in the the second call to significantly reduce the time of the second call. 
+To save time in the case you need to run the script twice and to avoide the full scan of the music files or of the `.xml`file twice, a `.pickle` and a `.csv` file are created by the first scan of the library. These will be reused in the the second call to significantly reduce the time of the second call. 
 
-However, if your music files or `.xml` have changed between the first and the second call, you need to remove the existing `.pickles` and `.csv` are these wont reflect anymore the state of your music library.
+However, if your music files or `.xml` have changed between the fiorst and the second call, you need to remove the existing `.pickles` and `.csv` are these wont reflect anymore the state of your music library.
 
-### 2. MiniDisc Labels
-
-1. Create a playlist from an audio software containing the desired albums.
-2. Save this playlist using `.m3u8` format with a name that contains the word 'MiniDisc' (`MiniDisc.m3u8`for instance).
-3. Run the command:
-
-In terminal navigate to your `audio-libraries-tlk-master` folder and run:
-
-```
-source .venv/bin/activate
-```
-
-Once your virtual env is activated run:
-```
-streamlit run minidisc_labels_app.py
-```
-
-If the app doesn't start automatically, open your browser and navigate to [http://localhost:8501](http://localhost:8501).
-
-#### Available colors for MiniDIsc labels
-```
-'black','sky_blue','blue','blue_steel','blue_green',
-'navy_blue','blue_turquoise','fushia','gold','green',
-'pink','purple_light','purple','orange','red','yellow',
-'white','silver'
-```
 ## Detailed options
-
 
 ```
 options:
@@ -163,16 +112,3 @@ options:
                         From an .m3u8 file, create some MiniDisc labels using the cover artwork 
                         present in the audio library.
 ```
-## Apps Screenshots
-<img width="993" alt="Screenshot 2025-01-16 at 15 54 18" src="https://github.com/user-attachments/assets/5640e513-dacc-4933-b316-2da012ebf84c" />
-<img width="992" alt="Screenshot 2025-01-16 at 15 54 52" src="https://github.com/user-attachments/assets/cc6e1132-0ee2-4d1f-9a0f-331f7ef6846a" />
-
-## Labels examples
-![MD-inner-labels-examples](https://github.com/user-attachments/assets/c8d5cb68-64e5-4982-bd96-3b54931a0c7e)
-![MD-outer-labels-examples](https://github.com/user-attachments/assets/87745c31-d388-499f-9304-5c387af9c975)
-
-![MD-inner-labels-examples](https://github.com/user-attachments/assets/c8d5cb68-64e5-4982-bd96-3b54931a0c7e)
-
-
-
-

@@ -65,7 +65,7 @@ def group_by_cd(x):
     album_location = x["Album Location"].mode()[0]
     album_multi_location = len(x["Album Location"].unique()) > 1
     try:
-        principal_artist = x["Artrist"].mode()[0]
+        principal_artist = x["Artist"].mode()[0]
     except:
         principal_artist = None 
 

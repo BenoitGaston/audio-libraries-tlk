@@ -2,16 +2,17 @@ import os
 from PIL import Image, ImageFile
 import io
 import music_tag
-
-from .parameters import music_extentions,image_extentions
+import pandas as pd
+from .parameters import music_extentions, image_extentions
 from pathlib import Path
 
 import logging
+from typing import List, Tuple, Any
 
 ImageFile.MAXBLOCK = 2**20
 
 
-def assign_artwork_to_song(song_path, image_path):
+def assign_artwork_to_song(song_path: Path, image_path: Path) -> None:
 
     song_tag = music_tag.load_file(song_path)
 
@@ -22,7 +23,7 @@ def assign_artwork_to_song(song_path, image_path):
 
 
 def assign_non_prog_artwork_to_song_list(
-    music_dir, music_files_paths, album_title_from_path
+    music_dir: Path, music_files_paths: List[Path], album_title_from_path: str
 ):
 
     image_files_paths = get_image_files_paths(music_dir)
@@ -39,7 +40,12 @@ def assign_non_prog_artwork_to_song_list(
             assign_artwork_to_song(song_path, image_path)
 
 
-def extract_artwork(song_path, song_tag, is_any_cover_image, songs_wo_artwork):
+def extract_artwork(
+    song_path: Path,
+    song_tag: music_tag.FileTag,
+    is_any_cover_image: bool,
+    songs_wo_artwork: List[Path],
+) -> Tuple[bool, List[Path]]:
 
     # @todo understand why 'artwork' can be missing
     try:
@@ -60,14 +66,16 @@ def extract_artwork(song_path, song_tag, is_any_cover_image, songs_wo_artwork):
         if not is_any_cover_image:
             image = song_tag["artwork"].first.data
 
-            save_image(image, song_path.parents[0], str(song_tag["title"]).replace('/','_'))
+            save_image(
+                image, song_path.parents[0], str(song_tag["title"]).replace("/", "_")
+            )
 
             is_any_cover_image = True
 
     return is_any_cover_image, songs_wo_artwork
 
 
-def extension_files_paths(dir_path, extensions):
+def extension_files_paths(dir_path: Path, extensions: List[str]) -> List[Path]:
 
     files = os.listdir(str(dir_path))
 
@@ -83,19 +91,19 @@ def extension_files_paths(dir_path, extensions):
     return paths
 
 
-def get_music_files_paths(music_dir_path):
+def get_music_files_paths(music_dir_path: Path) -> List[Path]:
 
     return extension_files_paths(music_dir_path, music_extentions)
 
 
-def get_image_files_paths(music_dir_path):
+def get_image_files_paths(music_dir_path: Path) -> List[Path]:
 
     return extension_files_paths(music_dir_path, image_extentions)
 
 
-def save_image(image, path_to_album, image_save_name):
+def save_image(image_bytes: bytes, path_to_album: Path, image_save_name: str) -> None:
 
-    image = Image.open(io.BytesIO(image))
+    image = Image.open(io.BytesIO(image_bytes))
     try:
         image.save(
             path_to_album / f"{image_save_name}.jpg",
@@ -118,11 +126,11 @@ def save_image(image, path_to_album, image_save_name):
 class EditCoverArtwork:
     def __init__(
         self,
-        df_lib,
-        create_cover_jpg=False,
-        create_album_jpg=False,
-        complete_missing_cover_art=False,
-        convert_to_non_prog=False,
+        df_lib: pd.DataFrame,
+        create_cover_jpg: bool = False,
+        create_album_jpg: bool = False,
+        complete_missing_cover_art: bool = False,
+        convert_to_non_prog: bool = False,
     ):
         self.df_lib = df_lib
         self.create_cover_jpg = create_cover_jpg
@@ -130,12 +138,11 @@ class EditCoverArtwork:
         self.complete_missing_cover_art = complete_missing_cover_art
         self.convert_to_non_prog = convert_to_non_prog
 
-    def loop_over_albums_path(self):
+    def loop_over_albums_path(self) -> None:
 
         paths_to_albums = list(self.df_lib.loc[:, "Album Location"].unique())
 
-        print('Processing Album Covers Located at ', paths_to_albums)
-
+        print("Processing Album Covers Located at ", paths_to_albums)
 
         for path_to_album in paths_to_albums:
             path_to_album = Path(path_to_album)

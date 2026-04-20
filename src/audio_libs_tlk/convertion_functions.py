@@ -9,14 +9,16 @@ import os
 import unicodedata
 import logging
 
+from typing import Any, Optional, Optional
+
 
 def convert_a_playlist(
-    path_to_playlist_folder,
-    path_to_destination_folder,
-    orginal_path,
-    updated_path,
-    file_name,
-):
+    path_to_playlist_folder: Path,
+    path_to_destination_folder: Path,
+    orginal_path: str,
+    updated_path: str,
+    file_name: str,
+) -> None:
     """Change the location of the songs in a playlist
     by replacing orginal_path with updated_path
 
@@ -44,15 +46,15 @@ def convert_a_playlist(
     f.close()
 
 
-def m3u8_to_csv(path_to_playlist, playlist_name):
+def m3u8_to_csv(path_to_playlist: Path, playlist_name: str) -> pd.DataFrame:
     """Create a csv file from a m3u8
 
     Args:
-        path_to_playlist (_type_): path to playlist folder
-        playlist_name (_type_): playlist name
+        path_to_playlist (Path): path to playlist folder
+        playlist_name (str): playlist name
 
     Returns:
-        _type_: a pandas df containing the songs from the m3u8 file
+        pd.DataFrame: a pandas df containing the songs from the m3u8 file
     """
 
     file1 = open(path_to_playlist / playlist_name, "r")
@@ -104,13 +106,13 @@ def m3u8_to_csv(path_to_playlist, playlist_name):
     return df
 
 
-def df_to_m3u8(df, file_name, path_to_m3u8_folder):
-    """_summary_
+def df_to_m3u8(df: pd.DataFrame, file_name: str, path_to_m3u8_folder: Path) -> None:
+    """Convert a pandas df to a m3u8 file
 
     Args:
-        df (_type_): _description_
-        file_name (_type_): _description_
-        path_to_m3u8_folder (_type_): _description_
+        df (pd.DataFrame): a pandas df containing the songs to be added to the m3u8 file
+        file_name (str): file name for saving
+        path_to_m3u8_folder (Path): path to the folder where the m3u8 file will be saved
     """
 
     if not file_name.endswith(".m3u8"):
@@ -133,9 +135,9 @@ def df_to_m3u8(df, file_name, path_to_m3u8_folder):
 
 
 def PL_to_m3u8(
-    path_to_playlists_folder,
+    path_to_playlists_folder: Path,
     playlist,
-):
+) -> pd.DataFrame:
     """_summary_
 
     Args:

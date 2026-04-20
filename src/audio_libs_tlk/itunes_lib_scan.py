@@ -7,7 +7,12 @@ from itunesLibrary import library
 from urllib.parse import unquote
 
 from .convertion_functions import PL_to_m3u8
-from .parameters import itunes_numeric_columns,itunes_bool_columns,itunes_usefull_cols,itunes_date_columns
+from .parameters import (
+    itunes_numeric_columns,
+    itunes_bool_columns,
+    itunes_usefull_cols,
+    itunes_date_columns,
+)
 
 import pickle
 
@@ -18,11 +23,12 @@ logger = logging.getLogger(__name__)
 
 
 class iTunesLibraryScan:
+    """_summary_"""
 
     def __init__(
         self,
-        path_to_library_file=None,
-        path_to_dest_folder=None,
+        path_to_library_file: Path = None,
+        path_to_dest_folder: Path = None,
     ):
 
         if path_to_dest_folder != None:
@@ -132,13 +138,9 @@ class iTunesLibraryScan:
         logging.info(f"Shape of your Lib Data {df.shape}")
         logging.info(f"Columns of your Lib csv {df.columns}")
 
-        df[itunes_numeric_columns] = df[itunes_numeric_columns].apply(
-            pd.to_numeric
-        )
+        df[itunes_numeric_columns] = df[itunes_numeric_columns].apply(pd.to_numeric)
 
-        df[itunes_date_columns] = df[itunes_date_columns].apply(
-            pd.to_datetime
-        )
+        df[itunes_date_columns] = df[itunes_date_columns].apply(pd.to_datetime)
 
         df["Play Date"] = pd.to_datetime(df["Play Date"] - 2082826800, unit="s")
 
@@ -175,7 +177,6 @@ class iTunesLibraryScan:
             df_lib = pd.read_csv(
                 self.path_to_dest_folder / csv_name
             )  # ,dtype = dtype_dict)
-
 
         else:
             # must first parse...

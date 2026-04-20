@@ -67,7 +67,7 @@ def group_by_cd(x):
     try:
         principal_artist = x["Artist"].mode()[0]
     except:
-        principal_artist = None 
+        principal_artist = None
 
     return pd.Series(
         {
@@ -88,14 +88,13 @@ def group_by_cd(x):
             "Max Track Number": max_track,
             "Track Number Delta": track_num_delta,
             "CD Is Missing Tracks": ~all_track_present,
-            "CD Principal Artist" :  principal_artist,
+            "CD Principal Artist": principal_artist,
         }
     )
 
 
 class LibraryProcessing:
-
-    def __init__(self, path_to_playlist_folder, df_lib=None):
+    def __init__(self, path_to_playlist_folder: Path, df_lib: pd.DataFrame = None):
 
         self.df_lib = df_lib
         self.path_to_playlist_folder = path_to_playlist_folder
@@ -109,9 +108,16 @@ class LibraryProcessing:
     def convert_playlists_with_new_path(
         self,
         destination_folder="Converted_Playlists",
-        orginal_path=Path("."),
-        updated_path=Path("."),
+        orginal_path: Path = Path("."),
+        updated_path: Path = Path("."),
     ):
+        """_summary_
+
+        Args:
+            destination_folder (str, optional): _description_. Defaults to "Converted_Playlists".
+            orginal_path (Path, optional): _description_. Defaults to Path(".").
+            updated_path (Path, optional): _description_. Defaults to Path(".").
+        """
 
         if destination_folder not in os.listdir(self.path_to_playlist_folder):
             os.mkdir(self.path_to_playlist_folder / destination_folder)
@@ -135,6 +141,8 @@ class LibraryProcessing:
             )
 
     def get_special_playlists(self):
+
+        """_summary_"""
         path_to_pl = self.path_to_playlist_folder / "Special_Playlists"
         if "Special_Playlists" not in os.listdir(self.path_to_playlist_folder):
             os.mkdir(path_to_pl)
@@ -145,7 +153,9 @@ class LibraryProcessing:
         self.split_library_by_resolution()
         self.split_library_by_format()
 
-    def get_grouped_df(self, path_to_destination=None, disc_or_album="Album"):
+    def get_grouped_df(
+        self, path_to_destination: Path = None, disc_or_album: str = "Album"
+    ):
         """_summary_
 
         Args:
@@ -160,7 +170,6 @@ class LibraryProcessing:
             path_to_destination = self.path_to_playlist_folder / "Special_Playlists"
         df_lib = self.df_lib.copy()
         df_lib.loc[:, "Album"] = df_lib.loc[:, "Album"].apply(lambda x: str(x).strip())
-
 
         df_lib.loc[:, "Track Number"] = df_lib.loc[:, "Track Number"].fillna(0)
         df_lib.loc[:, "Track Number"] = df_lib.loc[:, "Track Number"].replace("", 0)
@@ -187,7 +196,7 @@ class LibraryProcessing:
             inplace=True,
         )
 
-        #df_lib.loc[:, "Album Artist"] = df_lib.loc[:, "Album Artist"].fillna(df_lib.loc[:,"Artist"])
+        # df_lib.loc[:, "Album Artist"] = df_lib.loc[:, "Album Artist"].fillna(df_lib.loc[:,"Artist"])
         # df_lib.loc[:, "Album Artist"] = df_lib.loc[:,"Album Artist"].apply(
         #    lambda x: str(x).strip()
         # )
@@ -203,13 +212,23 @@ class LibraryProcessing:
         return grouped_df
 
     def get_album_and_disc_df(self):
+        """_summary_"""
 
         self.album_df = self.get_grouped_df(disc_or_album="Album")
         self.disc_df = self.get_grouped_df(disc_or_album="Disc")
 
     def get_locations_with_multiple_album(self):
+        """ """
 
-        def group_by_location(x):
+        def group_by_location(x: pd.DataFrame):
+            """_summary_
+
+            Args:
+                x (pd.DataFrame): _description_
+
+            Returns:
+                _type_: _description_
+            """
 
             return pd.Series({"Number of Album in Location": len(x.Album.unique())})
 
@@ -234,8 +253,14 @@ class LibraryProcessing:
         )
 
     def get_disc_or_album_with_multiple_values(
-        self, disc_or_album="Album", feature="Has Multiple Genre"
+        self, disc_or_album: str = "Album", feature: str = "Has Multiple Genre"
     ):
+        """_summary_
+
+        Args:
+            disc_or_album (str, optional): _description_. Defaults to "Album".
+            feature (str, optional): _description_. Defaults to "Has Multiple Genre".
+        """
 
         if disc_or_album == "Album":
 
@@ -261,19 +286,25 @@ class LibraryProcessing:
         )
 
     def get_disc_with_missing_tracks(self):
-
+        """_summary_"""
         self.get_disc_or_album_with_multiple_values(
             disc_or_album="Disc", feature="Is Missing Tracks"
         )
 
     def get_album_with_multiple_genre(self):
-
+        """_summary_"""
         self.get_disc_or_album_with_multiple_values(
             disc_or_album="Album", feature="Has Multiple Genre"
         )
 
-    def split_library_by_resolution(self, resolutions=[128, 192, 256, 320, 1000]):
+    def split_library_by_resolution(
+        self, resolutions: list = [128, 192, 256, 320, 1000]
+    ):
+        """_summary_
 
+        Args:
+            resolutions (list, optional): _description_. Defaults to [128, 192, 256, 320, 1000].
+        """
         path_to_pl = self.path_to_playlist_folder / "Playlists_by_Resolution"
         if "Playlists_by_Resolution" not in os.listdir(self.path_to_playlist_folder):
             os.mkdir(path_to_pl)
@@ -292,6 +323,7 @@ class LibraryProcessing:
         df_to_m3u8(df_temp, file_name, path_to_pl)
 
     def split_library_by_format(self):
+        """_summary_"""
         path_to_pl = self.path_to_playlist_folder / "Playlists_by_Format"
         if "Playlists_by_Format" not in os.listdir(self.path_to_playlist_folder):
             os.mkdir(path_to_pl)
@@ -470,7 +502,7 @@ class LibraryProcessing:
             0,
         )
         path_to_pl = self.path_to_dest_folder/(audio_location.replace("/", "_") + "_PL")
-        
+
 
         if audio_location.replace("/", "_") + "_PL" not in os.listdir(
             self.path_to_dest_folder

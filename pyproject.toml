@@ -17,6 +17,16 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+    "ituneslibrary>=1.2.1",
+    "music-tag>=0.4.3",
+    "pandas>=2.0.3",
+    "pillow>=10.4.0",
+    "pre-commit>=3.5.0",
+    "pytest>=8.3.5",
+    "requests>=2.32.4",
+    "tqdm>=4.67.3",
+]
 
 [project.urls]
 Homepage = "https://github.com/BenoitGaston/audio-libraries-tlk"

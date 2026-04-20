@@ -4,7 +4,13 @@ import music_tag
 import pandas as pd
 
 import shutil
-from .parameters import tag_keys,itunes_cols,tags_to_itunes_cols_dict,music_extentions,playlist_extensions
+from .parameters import (
+    tag_keys,
+    itunes_cols,
+    tags_to_itunes_cols_dict,
+    music_extentions,
+    playlist_extensions,
+)
 import logging
 from pathlib import Path
 
@@ -14,8 +20,15 @@ logger = logging.getLogger(__name__)
 import datetime
 
 
-def extract_tags(song_tag, album_path, song_file):
+def extract_tags(
+    song_tag: music_tag.FileTag, album_path: Path, song_file: Path
+) -> dict:
 
+    """_summary_
+
+    Returns:
+        _type_: _description_
+    """
     result_dict = {}
     keys_to_get = tag_keys + [
         col
@@ -39,14 +52,21 @@ def extract_tags(song_tag, album_path, song_file):
     return result_dict
 
 
-def loop_over_a_music_path(music_lib_path):
+def loop_over_a_music_path(music_lib_path: Path) -> pd.DataFrame:
+    """_summary_
 
+    Args:
+        music_lib_path (Path): _description_
+
+    Returns:
+        pd.DataFrame: _description_
+    """
     music_lib_list = []
 
     suffixes = music_extentions
 
     for album_path, _, filenames in os.walk(music_lib_path):
-        print('Scanning Album Located at ', album_path)
+        print("Scanning Album Located at ", album_path)
 
         for song_file in filenames:
             if os.path.splitext(song_file)[1].lower() in suffixes:
@@ -64,8 +84,15 @@ def loop_over_a_music_path(music_lib_path):
     return music_lib_df
 
 
-def loop_over_a_songs_df(songs_df):
+def loop_over_a_songs_df(songs_df: pd.DataFrame) -> pd.DataFrame:
+    """_summary_
 
+    Args:
+        songs_df (pd.DataFrame): _description_
+
+    Returns:
+        pd.DataFrame: _description_
+    """
     music_lib_list = []
 
     for _, row in songs_df.iterrows():
@@ -83,8 +110,13 @@ def loop_over_a_songs_df(songs_df):
     return music_lib_df
 
 
-def loop_over_playlist_path(music_lib_path, path_to_dest_folder):
+def loop_over_playlist_path(music_lib_path: Path, path_to_dest_folder: Path) -> None:
+    """_summary_
 
+    Args:
+        music_lib_path (Path): _description_
+        path_to_dest_folder (Path): _description_
+    """
     suffixes = playlist_extensions
     for playlist_path, _, filenames in os.walk(music_lib_path):
         for playlist_file in filenames:
@@ -99,8 +131,15 @@ def loop_over_playlist_path(music_lib_path, path_to_dest_folder):
                     )
 
 
-def format_df_to_iTunes_csv_format(df_lib_scanned):
+def format_df_to_iTunes_csv_format(df_lib_scanned: pd.DataFrame) -> pd.DataFrame:
+    """_summary_
 
+    Args:
+        df_lib_scanned (pd.DataFrame): _description_
+
+    Returns:
+        pd.DataFrame: _description_
+    """
     df_lib_scanned.rename(columns=tags_to_itunes_cols_dict, inplace=True)
     df_lib_scanned.rename(
         columns={col: col.replace("#", "") for col in df_lib_scanned.columns},
@@ -137,12 +176,11 @@ def format_df_to_iTunes_csv_format(df_lib_scanned):
 
 
 class FolderLibraryScan:
-
     def __init__(
         self,
-        path_to_music_folder=None,
-        path_to_dest_folder=None,
-        force_scan=True,
+        path_to_music_folder: Path = None,
+        path_to_dest_folder: Path = None,
+        force_scan: bool = True,
     ):
 
         self.path_to_music_folder = path_to_music_folder
@@ -157,6 +195,11 @@ class FolderLibraryScan:
         self.df_lib = pd.DataFrame([])
 
     def get_folder_library_as_csv(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
 
         files = os.listdir(self.path_to_dest_folder)
 
@@ -192,5 +235,6 @@ class FolderLibraryScan:
         return df_lib_scanned
 
     def get_all_playlists_from_a_folder(self):
+        """_summary_"""
 
         loop_over_playlist_path(self.path_to_music_folder, self.path_to_playlist_folder)

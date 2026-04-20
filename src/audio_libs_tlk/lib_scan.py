@@ -7,14 +7,14 @@ from .processing_lib import LibraryProcessing
 from pathlib import Path
 import os
 
-class LibraryScan:
 
+class LibraryScan:
     def __init__(
         self,
-        path_to_library_file=None,
-        path_to_music_folder=None,
-        path_to_dest_folder=None,
-        force_scan=True,
+        path_to_library_file: Path = None,
+        path_to_music_folder: Path = None,
+        path_to_dest_folder: Path = None,
+        force_scan: bool = True,
     ):
 
         if path_to_library_file is not None and path_to_music_folder is None:
@@ -32,7 +32,11 @@ class LibraryScan:
             self.iTunes_lib = False
 
     def get_library_as_csv(self):
+        """_summary_
 
+        Returns:
+            _type_: _description_
+        """
         if self.iTunes_lib:
 
             self.lib_df = self.Scan.get_itunes_library_as_csv()
@@ -42,6 +46,7 @@ class LibraryScan:
         return self.lib_df
 
     def get_library_playlists(self):
+        """_summary_"""
 
         if self.iTunes_lib:
 
@@ -51,17 +56,28 @@ class LibraryScan:
             self.Scan.get_all_playlists_from_a_folder()
 
 
-
 def scan_and_process(
-    path_to_library_data,
-    orginal_path_written_in_playlists=None,
-    updated_path_written_in_playlists=None,
-    create_cover_jpg=False,
-    create_album_title_jpg=False,
-    complete_missing_cover_art=False,
-    convert_to_non_prog=False,
-    create_special_playlists=False,
+    path_to_library_data: Path,
+    orginal_path_written_in_playlists: Path = None,
+    updated_path_written_in_playlists: Path = None,
+    create_cover_jpg: bool = False,
+    create_album_title_jpg: bool = False,
+    complete_missing_cover_art: bool = False,
+    convert_to_non_prog: bool = False,
+    create_special_playlists: bool = False,
 ):
+    """_summary_
+
+    Args:
+        path_to_library_data (Path): _description_
+        orginal_path_written_in_playlists (Path, optional): _description_. Defaults to None.
+        updated_path_written_in_playlists (Path, optional): _description_. Defaults to None.
+        create_cover_jpg (bool, optional): _description_. Defaults to False.
+        create_album_title_jpg (bool, optional): _description_. Defaults to False.
+        complete_missing_cover_art (bool, optional): _description_. Defaults to False.
+        convert_to_non_prog (bool, optional): _description_. Defaults to False.
+        create_special_playlists (bool, optional): _description_. Defaults to False.
+    """
     xml_files = [f for f in os.listdir(path_to_library_data) if f.endswith(".xml")]
 
     if len(xml_files) > 0:
@@ -135,4 +151,3 @@ def scan_and_process(
         )
 
         edit_covers.loop_over_albums_path()
-    

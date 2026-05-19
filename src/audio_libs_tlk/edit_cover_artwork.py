@@ -3,11 +3,11 @@ from PIL import Image, ImageFile
 import io
 import music_tag
 import pandas as pd
-from .parameters import music_extentions, image_extentions
+from src.audio_libs_tlk.parameters import music_extentions, image_extentions
 from pathlib import Path
 
 import logging
-from typing import List, Tuple, Any
+from typing import List, Tuple
 
 ImageFile.MAXBLOCK = 2**20
 

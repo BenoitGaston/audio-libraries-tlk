@@ -1,5 +1,5 @@
-from .convertion_functions import df_to_m3u8
-from .convertion_functions import convert_a_playlist
+from src.audio_libs_tlk.convertion_functions import df_to_m3u8
+from src.audio_libs_tlk.convertion_functions import convert_a_playlist
 import numpy as np
 from pathlib import Path
 import pandas as pd

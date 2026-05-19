@@ -4,7 +4,7 @@ import music_tag
 import pandas as pd
 
 import shutil
-from .parameters import (
+from src.audio_libs_tlk.parameters import (
     tag_keys,
     itunes_cols,
     tags_to_itunes_cols_dict,

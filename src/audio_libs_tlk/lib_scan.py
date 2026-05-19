@@ -1,8 +1,8 @@
-from .itunes_lib_scan import iTunesLibraryScan
-from .folder_lib_scan import FolderLibraryScan
-from .edit_cover_artwork import EditCoverArtwork
-from .create_md_labels import MiniDiscCovers
-from .processing_lib import LibraryProcessing
+from src.audio_libs_tlk.itunes_lib_scan import iTunesLibraryScan
+from src.audio_libs_tlk.folder_lib_scan import FolderLibraryScan
+from src.audio_libs_tlk.edit_cover_artwork import EditCoverArtwork
+
+from src.audio_libs_tlk.processing_lib import LibraryProcessing
 
 from pathlib import Path
 import os

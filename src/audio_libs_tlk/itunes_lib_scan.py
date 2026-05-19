@@ -6,8 +6,8 @@ import numpy as np
 from itunesLibrary import library
 from urllib.parse import unquote
 
-from .convertion_functions import PL_to_m3u8
-from .parameters import (
+from src.audio_libs_tlk.convertion_functions import PL_to_m3u8
+from src.audio_libs_tlk.parameters import (
     itunes_numeric_columns,
     itunes_bool_columns,
     itunes_usefull_cols,

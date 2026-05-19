@@ -18,6 +18,7 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
+    "feedparser>=6.0.12",
     "ituneslibrary>=1.2.1",
     "music-tag>=0.4.3",
     "pandas>=2.0.3",

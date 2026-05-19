@@ -23,10 +23,10 @@ def convert_a_playlist(
     by replacing orginal_path with updated_path
 
     Args:
-        path_to_playlist_folder (Path): _description_
-        path_to_destination_folder (Path): _description_
+        path_to_playlist_folder (Path): path to the folder where the m3u8 file is located
+        path_to_destination_folder (Path): path to the folder where the updated m3u8 file will be saved
         orginal_path (str): part of the path to be replaced
-        updated_path (str): _description_
+        updated_path (str): the path that will replace the original path
         file_name (str): file name for saving
     """
 
@@ -57,7 +57,7 @@ def m3u8_to_csv(path_to_playlist: Path, playlist_name: str) -> pd.DataFrame:
         pd.DataFrame: a pandas df containing the songs from the m3u8 file
     """
 
-    file1 = open(path_to_playlist / playlist_name, "r")
+    file = open(path_to_playlist / playlist_name, "r")
     count = 0
 
     duration_list = []
@@ -65,7 +65,7 @@ def m3u8_to_csv(path_to_playlist: Path, playlist_name: str) -> pd.DataFrame:
     artist_list = []
     location_list = []
 
-    for line in file1:
+    for line in file:
 
         line_strip = line.strip()
         if line_strip.startswith("#EXTINF:"):
@@ -86,9 +86,9 @@ def m3u8_to_csv(path_to_playlist: Path, playlist_name: str) -> pd.DataFrame:
             location_list.append(location)
 
     # Closing files
-    file1.close()
+    file.close()
 
-    df = pd.DataFrame(
+    playlist_df = pd.DataFrame(
         {
             "Artist": artist_list,
             "Title": title_list,
@@ -97,20 +97,24 @@ def m3u8_to_csv(path_to_playlist: Path, playlist_name: str) -> pd.DataFrame:
         }
     )
 
-    df.loc[:, "Location"] = df.loc[:, "Location"].apply(
+    playlist_df.loc[:, "Location"] = playlist_df.loc[:, "Location"].apply(
         lambda x: Path(unquote(x.replace("file:", "")))
     )
-    df.loc[:, "Album Location"] = df.loc[:, "Location"].apply(lambda x: x.parent)
-    df.to_csv(path_to_playlist / playlist_name.replace("m3u8", "csv"))
+    playlist_df.loc[:, "Album Location"] = playlist_df.loc[:, "Location"].apply(
+        lambda x: x.parent
+    )
+    playlist_df.to_csv(path_to_playlist / playlist_name.replace("m3u8", "csv"))
 
-    return df
+    return playlist_df
 
 
-def df_to_m3u8(df: pd.DataFrame, file_name: str, path_to_m3u8_folder: Path) -> None:
+def df_to_m3u8(
+    playlist_df: pd.DataFrame, file_name: str, path_to_m3u8_folder: Path
+) -> None:
     """Convert a pandas df to a m3u8 file
 
     Args:
-        df (pd.DataFrame): a pandas df containing the songs to be added to the m3u8 file
+        playlist_df (pd.DataFrame): a pandas df containing the songs to be added to the m3u8 file
         file_name (str): file name for saving
         path_to_m3u8_folder (Path): path to the folder where the m3u8 file will be saved
     """
@@ -121,7 +125,7 @@ def df_to_m3u8(df: pd.DataFrame, file_name: str, path_to_m3u8_folder: Path) -> N
     f = open(path_to_m3u8_folder / file_name, "w+")
     f.write(f"#EXTM3U\r\n")
 
-    for _, row in df.iterrows():
+    for _, row in playlist_df.iterrows():
 
         total_time = row["Total Time"]
         name = row["Name"]
@@ -183,7 +187,7 @@ def PL_to_m3u8(
 
     f.close()
 
-    df = pd.DataFrame(
+    playlist_df = pd.DataFrame(
         {
             "Artist": artist_list,
             "Name": name_list,
@@ -191,5 +195,7 @@ def PL_to_m3u8(
             "Location": location_list,
         }
     )
-    df.loc[:, "Location"] = df.loc[:, "Location"].apply(lambda x: unquote(x))
-    return df
+    playlist_df.loc[:, "Location"] = playlist_df.loc[:, "Location"].apply(
+        lambda x: unquote(x)
+    )
+    return playlist_df

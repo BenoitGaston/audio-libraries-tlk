@@ -1,10 +1,12 @@
+from __future__ import annotations
+
 import os
 
 import music_tag
 import pandas as pd
 
 import shutil
-from src.audio_libs_tlk.parameters import (
+from .parameters import (
     tag_keys,
     itunes_cols,
     tags_to_itunes_cols_dict,
@@ -21,7 +23,7 @@ import datetime
 
 
 def extract_tags(
-    song_tag: music_tag.FileTag, album_path: Path, song_file: Path
+    song_tag: music_tag.AudioFile, album_path: Path, song_file: Path
 ) -> dict:
 
     """_summary_

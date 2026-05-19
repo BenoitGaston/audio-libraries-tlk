@@ -228,5 +228,3 @@ itunes_usefull_cols = [
     "Library Folder Count",
     "Podcast",
 ]
-
-

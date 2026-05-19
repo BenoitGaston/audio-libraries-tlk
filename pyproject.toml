@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "audio-libraries-tlk"
-version = "1.2.2"
+version = "1.2.3"
 authors = [
   { name="Benoît Gaston", email="benoitgaston59@gmail.com" },
 ]
@@ -18,12 +18,15 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
+    "build>=1.2.2.post1",
     "feedparser>=6.0.12",
     "ituneslibrary>=1.2.1",
     "music-tag>=0.4.3",
+    "numpy>=1.24.4",
     "pandas>=2.0.3",
     "pillow>=10.4.0",
     "pre-commit>=3.5.0",
+    "pydantic>=2.10.6",
     "pytest>=8.3.5",
     "requests>=2.32.4",
     "tqdm>=4.67.3",

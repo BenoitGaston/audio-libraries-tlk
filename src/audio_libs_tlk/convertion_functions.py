@@ -1,15 +1,12 @@
 import pandas as pd
 import os
-import xml.etree.ElementTree as ET  ## XML parsing
+
 from pathlib import Path
 
 from urllib.parse import unquote
 
 import os
 import unicodedata
-import logging
-
-from typing import Any, Optional, Optional
 
 
 def convert_a_playlist(

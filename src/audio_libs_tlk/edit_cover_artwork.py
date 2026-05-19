@@ -3,7 +3,7 @@ from PIL import Image, ImageFile
 import io
 import music_tag
 import pandas as pd
-from src.audio_libs_tlk.parameters import music_extentions, image_extentions
+from .parameters import music_extentions, image_extentions
 from pathlib import Path
 
 import logging
@@ -13,6 +13,12 @@ ImageFile.MAXBLOCK = 2**20
 
 
 def assign_artwork_to_song(song_path: Path, image_path: Path) -> None:
+    """_summary_
+
+    Args:
+        song_path (Path): _description_
+        image_path (Path): _description_
+    """
 
     song_tag = music_tag.load_file(song_path)
 
@@ -25,6 +31,13 @@ def assign_artwork_to_song(song_path: Path, image_path: Path) -> None:
 def assign_non_prog_artwork_to_song_list(
     music_dir: Path, music_files_paths: List[Path], album_title_from_path: str
 ):
+    """_summary_
+
+    Args:
+        music_dir (Path): _description_
+        music_files_paths (List[Path]): _description_
+        album_title_from_path (str): _description_
+    """
 
     image_files_paths = get_image_files_paths(music_dir)
 
@@ -42,7 +55,7 @@ def assign_non_prog_artwork_to_song_list(
 
 def extract_artwork(
     song_path: Path,
-    song_tag: music_tag.FileTag,
+    song_tag: music_tag.AudioFile,
     is_any_cover_image: bool,
     songs_wo_artwork: List[Path],
 ) -> Tuple[bool, List[Path]]:

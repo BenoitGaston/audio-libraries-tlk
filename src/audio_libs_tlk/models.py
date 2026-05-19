@@ -1,7 +1,6 @@
 from pydantic import BaseModel
-from typing import Dict, Any
+from typing import Dict
 import pandas as pd
-from datetime import datetime
 
 
 class iTunesDataFrameSchema(BaseModel):

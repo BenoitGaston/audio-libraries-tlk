@@ -11,6 +11,8 @@ from typing import List, Tuple
 
 ImageFile.MAXBLOCK = 2**20
 
+logger = logging.getLogger(__name__)
+
 
 def assign_artwork_to_song(song_path: Path, image_path: Path) -> None:
     """_summary_
@@ -155,10 +157,11 @@ class EditCoverArtwork:
 
         paths_to_albums = list(self.df_lib.loc[:, "Album Location"].unique())
 
-        print("Processing Album Covers Located at ", paths_to_albums)
+        logger.info("Processing cover artwork for %d albums", len(paths_to_albums))
 
         for path_to_album in paths_to_albums:
             path_to_album = Path(path_to_album)
+            logger.debug("Processing cover artwork at %s", path_to_album)
 
             music_files_paths = get_music_files_paths(path_to_album)
             image_files_paths = get_image_files_paths(path_to_album)
@@ -207,4 +210,4 @@ class EditCoverArtwork:
                     )
 
             elif songs_wo_artwork_paths:
-                logging.warning(f"**** Album wo artwork: , {path_to_album}")
+                logger.warning("Album has no artwork: %s", path_to_album)

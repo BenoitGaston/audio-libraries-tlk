@@ -77,8 +77,9 @@ class iTunesLibraryScan:
         else:
             # must first parse...
 
-            logging.info(
-                f"! Be Patient. Parsing your {self.lib_name} will take a long time (~60mins for a 30k songs lib with a Mac mini M2) !"
+            logger.info(
+                "Parsing iTunes library %s; this may take a long time.",
+                self.lib_name,
             )
             lib = library.parse(self.path_to_library_file)
 
@@ -135,8 +136,8 @@ class iTunesLibraryScan:
                     data[column].append(np.nan)
         df = pd.DataFrame(data)
 
-        logging.info(f"Shape of your Lib Data {df.shape}")
-        logging.info(f"Columns of your Lib csv {df.columns}")
+        logger.info("Converted iTunes library to a dataframe with shape %s", df.shape)
+        logger.debug("iTunes library columns: %s", list(df.columns))
 
         df[itunes_numeric_columns] = df[itunes_numeric_columns].apply(pd.to_numeric)
 
@@ -169,18 +170,14 @@ class iTunesLibraryScan:
         """
         csv_name = self.lib_name.replace(".xml", ".csv")
         if csv_name in os.listdir(self.path_to_dest_folder):
-            """dtype_dict = {col:str for col in itunes_usefull_cols if col in itunes_bool_columns}
-            dtype_dict.update({col:float for col in itunes_usefull_cols if col in itunes_numeric_columns })
-            dtype_dict.update({col:str for col in itunes_usefull_cols if not (col in itunes_numeric_columns
-                                                                 or col in  itunes_bool_columns)})
-            print(dtype_dict.keys())"""
+            logger.info("Loading cached iTunes library CSV from %s", csv_name)
             df_lib = pd.read_csv(
                 self.path_to_dest_folder / csv_name
             )  # ,dtype = dtype_dict)
 
         else:
             # must first parse...
-            logging.info("! Be Patient this will take a few seconds !")
+            logger.info("Converting iTunes library %s to CSV", self.lib_name)
             df_lib = self.convert_lib_to_csv()
 
         df_lib = df_lib.dropna(subset=["Artist"])

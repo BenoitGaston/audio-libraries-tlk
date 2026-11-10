@@ -68,7 +68,7 @@ def loop_over_a_music_path(music_lib_path: Path) -> pd.DataFrame:
     suffixes = music_extentions
 
     for album_path, _, filenames in os.walk(music_lib_path):
-        print("Scanning Album Located at ", album_path)
+        logger.info("Scanning album at %s", album_path)
 
         for song_file in filenames:
             if os.path.splitext(song_file)[1].lower() in suffixes:
@@ -216,10 +216,12 @@ class FolderLibraryScan:
         )
 
         if len(scanned_files) > 0 and not self.force_scan:
+            logger.info("Loading cached music library scan from %s", scanned_files[-1])
             df_lib_scanned = pd.read_csv(self.path_to_dest_folder / scanned_files[-1])
         else:
-            logging.info(
-                f"! Be Patient. Scanning all the music your {self.path_to_music_folder} will take a long time (~15mins for a 30k songs lib with a Mac mini M2) !"
+            logger.info(
+                "Scanning music library at %s; this may take a long time.",
+                self.path_to_music_folder,
             )
 
             df_lib_scanned = loop_over_a_music_path(
@@ -229,11 +231,12 @@ class FolderLibraryScan:
         if not df_lib_scanned.empty:
             df_lib_scanned = format_df_to_iTunes_csv_format(df_lib_scanned)
 
-        df_lib_scanned.to_csv(
+        scan_path = (
             self.path_to_dest_folder
-            / f"{str(datetime.datetime.now().date())}_music_lib_scan.csv",
-            index=False,
+            / f"{str(datetime.datetime.now().date())}_music_lib_scan.csv"
         )
+        df_lib_scanned.to_csv(scan_path, index=False)
+        logger.info("Saved music library scan to %s", scan_path)
         return df_lib_scanned
 
     def get_all_playlists_from_a_folder(self):

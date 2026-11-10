@@ -4,6 +4,11 @@ import numpy as np
 from pathlib import Path
 import pandas as pd
 import os
+import logging
+from typing import Sequence
+
+
+logger = logging.getLogger(__name__)
 
 
 def group_by_cd(x):
@@ -150,8 +155,103 @@ class LibraryProcessing:
         self.get_locations_with_multiple_album()
         self.get_disc_with_missing_tracks()
         self.get_album_with_multiple_genre()
+        self.find_duplicate_songs()
+        self.find_albums_with_shared_titles()
         self.split_library_by_resolution()
         self.split_library_by_format()
+
+    def _require_columns(self, columns: Sequence[str]) -> None:
+        if self.df_lib is None:
+            raise ValueError("A library dataframe is required for playlist analysis.")
+
+        missing_columns = [column for column in columns if column not in self.df_lib]
+        if missing_columns:
+            raise ValueError(
+                "Library dataframe is missing required columns: "
+                + ", ".join(missing_columns)
+            )
+
+    def _export_analysis_playlist(
+        self, dataframe: pd.DataFrame, playlist_name: str
+    ) -> pd.DataFrame:
+        output_folder = self.path_to_playlist_folder / "Special_Playlists"
+        output_folder.mkdir(exist_ok=True)
+
+        playlist_dataframe = dataframe
+        if "Name" not in playlist_dataframe and "Title" in playlist_dataframe:
+            playlist_dataframe = playlist_dataframe.rename(columns={"Title": "Name"})
+
+        required_playlist_columns = ["Name", "Artist", "Total Time", "Location"]
+        missing_columns = [
+            column
+            for column in required_playlist_columns
+            if column not in playlist_dataframe
+        ]
+        if missing_columns:
+            raise ValueError(
+                "Library dataframe is missing columns required to create an M3U8 file: "
+                + ", ".join(missing_columns)
+            )
+
+        dataframe.to_csv(output_folder / f"{playlist_name}.csv", index=False)
+        df_to_m3u8(playlist_dataframe, playlist_name, output_folder)
+        logger.info(
+            "Exported %d tracks to %s",
+            len(dataframe),
+            output_folder / playlist_name,
+        )
+        return dataframe
+
+    def find_duplicate_songs(
+        self, match_columns: Sequence[str] = ("Name", "Artist")
+    ) -> pd.DataFrame:
+        """Find tracks that share the same values for all selected columns.
+
+        Pass ``("Name",)`` to match by title only, or include columns such as
+        ``"Artist"`` and ``"Album"`` to narrow the match.
+        """
+        if not match_columns:
+            raise ValueError("At least one column is required to identify duplicates.")
+
+        self._require_columns(match_columns)
+        duplicate_songs = self.df_lib[
+            self.df_lib.duplicated(subset=list(match_columns), keep=False)
+        ].copy()
+
+        return self._export_analysis_playlist(duplicate_songs, "Duplicate_Songs")
+
+    def find_inconsistent_album_genres(
+        self, album_columns: Sequence[str] = ("Album", "Album Artist")
+    ) -> pd.DataFrame:
+        """Find tracks from albums containing more than one genre."""
+        if not album_columns:
+            raise ValueError("At least one column is required to identify an album.")
+
+        self._require_columns([*album_columns, "Genre"])
+        genre_counts = self.df_lib.groupby(
+            list(album_columns), dropna=False
+        )["Genre"].transform("nunique")
+        inconsistent_genres = self.df_lib[genre_counts > 1].copy()
+
+        return self._export_analysis_playlist(
+            inconsistent_genres, "Albums_With_Inconsistent_Genres"
+        )
+
+    def find_albums_with_shared_titles(
+        self,
+        album_column: str = "Album",
+        artist_column: str = "Album Artist",
+    ) -> pd.DataFrame:
+        """Find album titles that belong to more than one artist."""
+        self._require_columns([album_column, artist_column])
+        artist_counts = self.df_lib.groupby(album_column, dropna=False)[
+            artist_column
+        ].transform("nunique")
+        shared_title_albums = self.df_lib[artist_counts > 1].copy()
+
+        return self._export_analysis_playlist(
+            shared_title_albums, "Albums_With_Shared_Titles"
+        )
 
     def get_grouped_df(
         self, path_to_destination: Path = None, disc_or_album: str = "Album"
@@ -293,9 +393,7 @@ class LibraryProcessing:
 
     def get_album_with_multiple_genre(self):
         """_summary_"""
-        self.get_disc_or_album_with_multiple_values(
-            disc_or_album="Album", feature="Has Multiple Genre"
-        )
+        return self.find_inconsistent_album_genres()
 
     def split_library_by_resolution(
         self, resolutions: list = [128, 192, 256, 320, 1000]

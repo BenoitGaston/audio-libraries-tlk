@@ -212,3 +212,6 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# Local iTunes library fixture
+tests/iTunesLibrary-2024-02-28.xml

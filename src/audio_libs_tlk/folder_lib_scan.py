@@ -113,11 +113,11 @@ def loop_over_a_songs_df(songs_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def loop_over_playlist_path(music_lib_path: Path, path_to_dest_folder: Path) -> None:
-    """_summary_
+    """Loop over all playlists in the music library path and copy them to the destination folder.
 
     Args:
-        music_lib_path (Path): _description_
-        path_to_dest_folder (Path): _description_
+        music_lib_path (Path): Path to the music library folder.
+        path_to_dest_folder (Path): Path to the destination folder where playlists will be copied.
     """
     suffixes = playlist_extensions
     for playlist_path, _, filenames in os.walk(music_lib_path):

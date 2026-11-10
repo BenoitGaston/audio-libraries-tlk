@@ -30,6 +30,21 @@ Through pip
 python3 -m pip install audio-libraries-tlk
 ```
 
+### Streamlit UI
+
+The local UI exposes the command-line workflow with form controls, status messages,
+and downloads for generated CSV, M3U8, and pickle files. From a repository checkout,
+install the optional UI dependency and launch it with:
+
+```
+uv sync --extra ui
+uv run streamlit run src/ui/app.py
+```
+
+Artwork controls modify source audio files. The app requires an explicit confirmation
+before such a run and can remember that confirmation only for the current browser
+session.
+
 
 ## Warnings
 
@@ -66,7 +81,11 @@ However, if your music files or .xml have changed between the first and the seco
 Then, for instance, to extract all the playlists contained in your music library, convert them into a format readable by a new audio device, and create a `cover.jpg` file for inside each album folder, run the command:
 
 ```
-python3 -m audio-libs-tlk --path_to_library_data='/Users/user_name/Music/' --orginal_path_written_in_playlists='/Users/user_name/Music/' --updated_path_written_in_playlists='/home/Music/' --create_cover_jpg=True
+audio-libraries-tlk \
+  --path-to-library-data '/Users/user_name/Music/' \
+  --original-path-written-in-playlists '/Users/user_name/Music/' \
+  --updated-path-written-in-playlists '/home/Music/' \
+  --create-cover-jpg true
 ```
 
 

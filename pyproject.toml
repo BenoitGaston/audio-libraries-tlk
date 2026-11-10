@@ -32,6 +32,14 @@ dependencies = [
     "tqdm>=4.67.3",
 ]
 
+[project.optional-dependencies]
+ui = [
+    "streamlit>=1.35,<1.38",
+]
+
+[project.scripts]
+audio-libraries-tlk = "audio_libs_tlk.__main__:main"
+
 [project.urls]
 Homepage = "https://github.com/BenoitGaston/audio-libraries-tlk"
 Issues = "https://github.com/BenoitGaston/audio-libraries-tlk/issues"

@@ -15,11 +15,11 @@ logger = logging.getLogger(__name__)
 
 
 def assign_artwork_to_song(song_path: Path, image_path: Path) -> None:
-    """_summary_
+    """Replace one audio file's embedded artwork with an image file.
 
     Args:
-        song_path (Path): _description_
-        image_path (Path): _description_
+        song_path: Audio file whose artwork will be updated.
+        image_path: JPEG or PNG file to embed.
     """
 
     song_tag = music_tag.load_file(song_path)
@@ -33,12 +33,12 @@ def assign_artwork_to_song(song_path: Path, image_path: Path) -> None:
 def assign_non_prog_artwork_to_song_list(
     music_dir: Path, music_files_paths: List[Path], album_title_from_path: str
 ):
-    """_summary_
+    """Assign the album cover or album-title image to each supplied track.
 
     Args:
-        music_dir (Path): _description_
-        music_files_paths (List[Path]): _description_
-        album_title_from_path (str): _description_
+        music_dir: Album directory containing candidate image files.
+        music_files_paths: Tracks to update.
+        album_title_from_path: Album directory name used for a title image.
     """
 
     image_files_paths = get_image_files_paths(music_dir)
@@ -61,8 +61,17 @@ def extract_artwork(
     is_any_cover_image: bool,
     songs_wo_artwork: List[Path],
 ) -> Tuple[bool, List[Path]]:
+    """Collect tracks without artwork and save the first available cover image.
 
-    # @todo understand why 'artwork' can be missing
+    Args:
+        song_path: Path of the track being inspected.
+        song_tag: Loaded metadata object for the track.
+        is_any_cover_image: Whether an image has already been found in the album.
+        songs_wo_artwork: Accumulator for tracks without usable artwork.
+
+    Returns:
+        Whether the album has artwork and the accumulated missing-artwork tracks.
+    """
     try:
         song_tag["artwork"]
         artwork = True
@@ -91,7 +100,7 @@ def extract_artwork(
 
 
 def extension_files_paths(dir_path: Path, extensions: List[str]) -> List[Path]:
-
+    """Return non-AppleDouble files in a directory matching any extension."""
     files = os.listdir(str(dir_path))
 
     files = [
@@ -107,17 +116,17 @@ def extension_files_paths(dir_path: Path, extensions: List[str]) -> List[Path]:
 
 
 def get_music_files_paths(music_dir_path: Path) -> List[Path]:
-
+    """Return supported audio files directly inside an album directory."""
     return extension_files_paths(music_dir_path, music_extentions)
 
 
 def get_image_files_paths(music_dir_path: Path) -> List[Path]:
-
+    """Return supported image files directly inside an album directory."""
     return extension_files_paths(music_dir_path, image_extentions)
 
 
 def save_image(image_bytes: bytes, path_to_album: Path, image_save_name: str) -> None:
-
+    """Save embedded image bytes as an optimized non-progressive JPEG."""
     image = Image.open(io.BytesIO(image_bytes))
     try:
         image.save(
@@ -139,6 +148,8 @@ def save_image(image_bytes: bytes, path_to_album: Path, image_save_name: str) ->
 
 
 class EditCoverArtwork:
+    """Apply configured cover-artwork operations to each album in a library."""
+
     def __init__(
         self,
         df_lib: pd.DataFrame,
@@ -147,6 +158,7 @@ class EditCoverArtwork:
         complete_missing_cover_art: bool = False,
         convert_to_non_prog: bool = False,
     ):
+        """Configure the artwork operations to apply to the library dataframe."""
         self.df_lib = df_lib
         self.create_cover_jpg = create_cover_jpg
         self.create_album_jpg = create_album_jpg
@@ -154,7 +166,7 @@ class EditCoverArtwork:
         self.convert_to_non_prog = convert_to_non_prog
 
     def loop_over_albums_path(self) -> None:
-
+        """Process each unique album location in the library dataframe."""
         paths_to_albums = list(self.df_lib.loc[:, "Album Location"].unique())
 
         logger.info("Processing cover artwork for %d albums", len(paths_to_albums))

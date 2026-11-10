@@ -6,9 +6,13 @@ from pydantic import AliasChoices, BaseModel, ConfigDict, Field
 
 
 class AudioTrack(BaseModel):
-    """Metadata for one track in an audio library."""
+    """Metadata for one track in an audio library.
 
-    model_config = ConfigDict(populate_by_name=True)
+    Standard iTunes column names are accepted as input aliases. Unknown
+    metadata is retained so scans can carry their full source metadata.
+    """
+
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
 
     name: str | None = Field(
         default=None,
@@ -35,7 +39,7 @@ class AudioTrack(BaseModel):
 
 
 class AudioLibrary(BaseModel):
-    """A collection of tracks scanned from a music library."""
+    """A named collection of tracks scanned from a music library."""
 
     name: str | None = None
     tracks: list[AudioTrack]
@@ -44,12 +48,20 @@ class AudioLibrary(BaseModel):
     def from_dataframe(
         cls, dataframe: pd.DataFrame, name: str | None = None
     ) -> "AudioLibrary":
-        records = dataframe.where(pd.notna(dataframe), None).to_dict("records")
-        return cls(name=name, tracks=[AudioTrack.model_validate(record) for record in records])
+        """Create a validated library from a dataframe of track metadata."""
+        records = (
+            dataframe.astype(object).where(pd.notna(dataframe), None).to_dict("records")
+        )
+        return cls(
+            name=name, tracks=[AudioTrack.model_validate(record) for record in records]
+        )
 
 
 class PlaylistTrack(AudioTrack):
-    """A track entry that can be emitted in an M3U8 playlist."""
+    """A track entry that can be emitted in an M3U8 playlist.
+
+    ``total_time`` is expressed in milliseconds, matching iTunes exports.
+    """
 
     total_time: int = Field(
         validation_alias="Total Time", serialization_alias="Total Time", ge=0
@@ -57,22 +69,33 @@ class PlaylistTrack(AudioTrack):
 
 
 class Playlist(BaseModel):
-    """A named playlist and its ordered track entries."""
+    """A named, ordered collection of playlist track entries."""
 
     name: str
     tracks: list[PlaylistTrack]
 
     @classmethod
     def from_dataframe(cls, name: str, dataframe: pd.DataFrame) -> "Playlist":
-        records = dataframe.where(pd.notna(dataframe), None).to_dict("records")
+        """Create a validated playlist from a dataframe of playlist tracks."""
+        records = (
+            dataframe.astype(object).where(pd.notna(dataframe), None).to_dict("records")
+        )
         return cls(
             name=name,
             tracks=[PlaylistTrack.model_validate(record) for record in records],
         )
 
 
+class ProcessingResult(BaseModel):
+    """Files and locations produced by one library processing operation."""
+
+    library_data_path: Path
+    playlist_directory: Path
+    artifacts: list[Path]
+
+
 class iTunesDataFrameSchema(BaseModel):
-    """Schema definition for iTunes dataframe columns and their types."""
+    """Pandas dtype definitions for columns exported by iTunes or Music."""
 
     # Numeric columns (int or float)
     numeric_columns: Dict[str, str] = {
@@ -123,15 +146,15 @@ class iTunesDataFrameSchema(BaseModel):
 
     @property
     def all_columns(self) -> Dict[str, str]:
-        """Get all columns with their types."""
+        """Return the numeric, date, and boolean dtype mappings combined."""
         return {**self.numeric_columns, **self.date_columns, **self.bool_columns}
 
     def get_dtype_dict(self) -> Dict[str, str]:
-        """Get pandas dtype mapping for all columns."""
+        """Return the pandas dtype mapping for every managed column."""
         return self.all_columns
 
     def validate_dataframe(self, df: pd.DataFrame) -> bool:
-        """Validate that dataframe has correct column types."""
+        """Return whether each present managed column has its expected dtype."""
         expected_dtypes = self.get_dtype_dict()
         for col, expected_dtype in expected_dtypes.items():
             if col in df.columns:
@@ -156,7 +179,7 @@ class iTunesDataFrameSchema(BaseModel):
         return True
 
     def apply_schema(self, df: pd.DataFrame) -> pd.DataFrame:
-        """Apply the schema to a dataframe, converting types where possible."""
+        """Return a copy with managed columns converted to their expected dtypes."""
         df = df.copy()
         dtype_dict = self.get_dtype_dict()
 

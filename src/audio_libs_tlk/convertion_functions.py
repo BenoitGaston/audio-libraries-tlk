@@ -1,12 +1,8 @@
-import pandas as pd
-import os
-
 from pathlib import Path
-
 from urllib.parse import unquote
-
-import os
 import unicodedata
+
+import pandas as pd
 
 from .models import Playlist
 
@@ -18,74 +14,59 @@ def convert_a_playlist(
     updated_path: str,
     file_name: str,
 ) -> None:
-    """Change the location of the songs in a playlist
-    by replacing orginal_path with updated_path
+    """Copy an M3U8 playlist while replacing its media-path prefix.
 
     Args:
-        path_to_playlist_folder (Path): path to the folder where the m3u8 file is located
-        path_to_destination_folder (Path): path to the folder where the updated m3u8 file will be saved
-        orginal_path (str): part of the path to be replaced
-        updated_path (str): the path that will replace the original path
-        file_name (str): file name for saving
+        path_to_playlist_folder: Folder containing the source playlist.
+        path_to_destination_folder: Folder for the converted playlist.
+        orginal_path: Prefix to replace in media-location lines.
+        updated_path: Replacement path prefix.
+        file_name: Name of the playlist to convert.
     """
-
-    playlist_file = open(path_to_playlist_folder / file_name)
-    lines = playlist_file.readlines()
-    playlist_file.close()
-
-    target_file_name = file_name
-    f = open(path_to_destination_folder / target_file_name, "w")
-
-    for line in lines:
-        if not (line.startswith("#EXTINF:") or line.startswith("#EXTM3U")):
-
-            line = str(line.replace(orginal_path, updated_path))
-        f.write((unicodedata.normalize("NFC", line).encode("utf-8")).decode("utf-8"))
-
-    f.close()
+    with (
+        open(path_to_playlist_folder / file_name) as source_file,
+        open(path_to_destination_folder / file_name, "w") as destination_file,
+    ):
+        for line in source_file:
+            if not (line.startswith("#EXTINF:") or line.startswith("#EXTM3U")):
+                line = line.replace(orginal_path, updated_path)
+            destination_file.write(
+                (unicodedata.normalize("NFC", line).encode("utf-8")).decode("utf-8")
+            )
 
 
 def m3u8_to_csv(path_to_playlist: Path, playlist_name: str) -> pd.DataFrame:
-    """Create a csv file from a m3u8
+    """Parse an M3U8 playlist and save its entries as a CSV file.
 
     Args:
-        path_to_playlist (Path): path to playlist folder
-        playlist_name (str): playlist name
+        path_to_playlist: Folder containing the M3U8 playlist.
+        playlist_name: M3U8 file name.
 
     Returns:
-        pd.DataFrame: a pandas df containing the songs from the m3u8 file
+        A dataframe containing artist, title, duration, and location columns.
     """
-
-    file = open(path_to_playlist / playlist_name, "r")
-    count = 0
 
     duration_list = []
     title_list = []
     artist_list = []
     location_list = []
 
-    for line in file:
+    with open(path_to_playlist / playlist_name, "r") as playlist_file:
+        for line in playlist_file:
+            line_strip = line.strip()
+            if line_strip.startswith("#EXTINF:"):
+                duration, separator, label = line_strip.removeprefix(
+                    "#EXTINF:"
+                ).partition(",")
+                if not separator or " - " not in label:
+                    raise ValueError(f"Invalid M3U8 entry: {line_strip}")
+                title, artist = label.rsplit(" - ", 1)
 
-        line_strip = line.strip()
-        if line_strip.startswith("#EXTINF:"):
-
-            line_strip = line_strip.replace("#EXTINF:", "")
-            duration = line_strip.split(",")[0]
-            line_strip = line_strip.replace(f"{duration},", "")
-            title = line_strip.split(" - ")[0]
-            artist = line_strip.split(" - ")[1]
-
-            count += 1
-
-            duration_list.append(duration)
-            title_list.append(title)
-            artist_list.append(artist)
-        elif not line_strip.startswith("#EXT"):
-            location = line.strip()
-            location_list.append(location)
-
-    # Closing files
-    file.close()
+                duration_list.append(duration)
+                title_list.append(title.strip())
+                artist_list.append(artist.strip())
+            elif not line_strip.startswith("#EXT"):
+                location_list.append(line_strip)
 
     playlist_df = pd.DataFrame(
         {
@@ -102,7 +83,9 @@ def m3u8_to_csv(path_to_playlist: Path, playlist_name: str) -> pd.DataFrame:
     playlist_df.loc[:, "Album Location"] = playlist_df.loc[:, "Location"].apply(
         lambda x: x.parent
     )
-    playlist_df.to_csv(path_to_playlist / playlist_name.replace("m3u8", "csv"))
+    playlist_df.to_csv(
+        path_to_playlist / playlist_name.replace("m3u8", "csv"), index=False
+    )
 
     return playlist_df
 
@@ -110,12 +93,12 @@ def m3u8_to_csv(path_to_playlist: Path, playlist_name: str) -> pd.DataFrame:
 def df_to_m3u8(
     playlist_df: pd.DataFrame, file_name: str, path_to_m3u8_folder: Path
 ) -> None:
-    """Convert a pandas df to a m3u8 file
+    """Write a dataframe of tracks to an M3U8 playlist.
 
     Args:
-        playlist_df (pd.DataFrame): a pandas df containing the songs to be added to the m3u8 file
-        file_name (str): file name for saving
-        path_to_m3u8_folder (Path): path to the folder where the m3u8 file will be saved
+        playlist_df: Track dataframe with name, artist, duration, and location columns.
+        file_name: Output playlist name, with or without the ``.m3u8`` suffix.
+        path_to_m3u8_folder: Destination directory.
     """
 
     if not file_name.endswith(".m3u8"):
@@ -134,25 +117,26 @@ def df_to_m3u8(
                 f"{unquote(str(track.location))}\r\n".replace("%20", " ")
             )
 
-    f.close()
-
 
 def PL_to_m3u8(
     path_to_playlists_folder: Path,
     playlist,
 ) -> pd.DataFrame:
-    """_summary_
+    """Export an iTunes playlist object to M3U8 and return its track dataframe.
 
     Args:
-        path_to_lib_folder (_type_): _description_
-        playlist (_type_): _description_
+        path_to_playlists_folder: Destination directory for the M3U8 file.
+        playlist: Playlist object supplied by ``itunesLibrary``.
 
     Returns:
-        _type_: _description_
+        Dataframe with the exported playlist's tracks.
     """
     file_name = f"{playlist.itunesAttributes['Name']}.m3u8"
-    if file_name in os.listdir():
-        file_name = f"{playlist.itunesAttributes['Name']} -  {playlist.itunesAttributes['Playlist ID']}.m3u"
+    if (path_to_playlists_folder / file_name).exists():
+        file_name = (
+            f"{playlist.itunesAttributes['Name']} - "
+            f"{playlist.itunesAttributes['Playlist ID']}.m3u8"
+        )
 
     f = open(path_to_playlists_folder / file_name, "w+")
     f.write(f"#EXTM3U\r\n")

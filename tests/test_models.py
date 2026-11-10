@@ -1,6 +1,11 @@
 import pandas as pd
 
-from audio_libs_tlk.models import AudioLibrary, Playlist, itunes_schema
+from audio_libs_tlk.models import (
+    AudioLibrary,
+    Playlist,
+    ProcessingResult,
+    itunes_schema,
+)
 
 
 def test_itunes_schema_apply_schema_converts_types():
@@ -55,6 +60,20 @@ def test_audio_library_describes_tracks_from_dataframe():
     assert library.tracks[0].album_artist == "Album Artist"
 
 
+def test_audio_library_converts_missing_metadata_to_none():
+    dataframe = pd.DataFrame(
+        {
+            "Name": ["Song Title"],
+            "Artist": [pd.NA],
+            "Location": ["file:/tmp/song.mp3"],
+        }
+    )
+
+    library = AudioLibrary.from_dataframe(dataframe)
+
+    assert library.tracks[0].artist is None
+
+
 def test_playlist_accepts_name_or_title_dataframe_columns():
     dataframe = pd.DataFrame(
         {
@@ -70,3 +89,14 @@ def test_playlist_accepts_name_or_title_dataframe_columns():
     assert playlist.name == "Example"
     assert playlist.tracks[0].name == "Song Title"
     assert playlist.tracks[0].total_time == 1500
+
+
+def test_processing_result_describes_artifact_locations(tmp_path):
+    result = ProcessingResult(
+        library_data_path=tmp_path,
+        playlist_directory=tmp_path / "Playlists",
+        artifacts=[tmp_path / "Playlists" / "report.m3u8"],
+    )
+
+    assert result.playlist_directory == tmp_path / "Playlists"
+    assert result.artifacts == [tmp_path / "Playlists" / "report.m3u8"]

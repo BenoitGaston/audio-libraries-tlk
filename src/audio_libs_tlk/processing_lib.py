@@ -13,10 +13,13 @@ logger = logging.getLogger(__name__)
 
 
 def group_by_cd(x):
-    """_summary_
+    """Summarize the tracks in one album or disc group.
 
     Args:
-        x (_type_): _description_
+        x: Dataframe containing tracks in a single group.
+
+    Returns:
+        Series with duration, size, metadata, and track-sequence summaries.
     """
     if "Total Time" in x.columns:
         total_duration = np.sum(x["Total Time"])
@@ -26,7 +29,7 @@ def group_by_cd(x):
         size = sum(x["Size"].astype(int))
     else:
         size = -1
-    if "it Rate" in x.columns:
+    if "Bit Rate" in x.columns:
         mean_bit_rate = np.mean(x["Bit Rate"].astype(int))
     else:
         mean_bit_rate = 0
@@ -52,7 +55,9 @@ def group_by_cd(x):
         max_rating = None
         avg_rating = None
 
-    album_type = x.Kind.mode()[0]
+    album_type = (
+        x["Kind"].mode().iat[0] if "Kind" in x and not x["Kind"].mode().empty else None
+    )
     if "Year" in x.columns:
         try:
             album_year = x.Year.mode()[0]
@@ -63,13 +68,19 @@ def group_by_cd(x):
         album_year = None
     if "Genre" in x.columns:
         album_multi_genre = len(x["Genre"].unique()) > 1
-        album_genre = x.Genre.mode()[0]
+        album_genre = x["Genre"].mode().iat[0] if not x["Genre"].mode().empty else None
     else:
         album_multi_genre = None
         album_genre = None
 
-    album_location = x["Album Location"].mode()[0]
-    album_multi_location = len(x["Album Location"].unique()) > 1
+    album_location = (
+        x["Album Location"].mode().iat[0]
+        if "Album Location" in x and not x["Album Location"].mode().empty
+        else None
+    )
+    album_multi_location = (
+        len(x["Album Location"].unique()) > 1 if "Album Location" in x else None
+    )
     try:
         principal_artist = x["Artist"].mode()[0]
     except:
@@ -93,26 +104,33 @@ def group_by_cd(x):
             "Min Track Number": min_track,
             "Max Track Number": max_track,
             "Track Number Delta": track_num_delta,
-            "CD Is Missing Tracks": ~all_track_present,
+            "CD Is Missing Tracks": (
+                not all_track_present if all_track_present is not None else None
+            ),
             "CD Principal Artist": principal_artist,
         }
     )
 
 
 class LibraryProcessing:
+    """Create playlist exports and consistency reports from a music library."""
+
     def __init__(
         self,
         path_to_playlist_folder: Path,
         df_lib: pd.DataFrame | AudioLibrary = None,
     ):
+        """Initialize processing from a dataframe or validated audio library.
 
+        Args:
+            path_to_playlist_folder: Root directory for generated playlists.
+            df_lib: Track dataframe or :class:`AudioLibrary` to process.
+        """
         if isinstance(df_lib, AudioLibrary):
             self.library = df_lib
             self.df_lib = pd.DataFrame(
                 [
-                    track.model_dump(
-                        by_alias=True, exclude_none=True, mode="python"
-                    )
+                    track.model_dump(by_alias=True, exclude_none=True, mode="python")
                     for track in df_lib.tracks
                 ]
             )
@@ -135,12 +153,12 @@ class LibraryProcessing:
         orginal_path: Path = Path("."),
         updated_path: Path = Path("."),
     ):
-        """_summary_
+        """Copy root M3U8 playlists while replacing their media-path prefix.
 
         Args:
-            destination_folder (str, optional): _description_. Defaults to "Converted_Playlists".
-            orginal_path (Path, optional): _description_. Defaults to Path(".").
-            updated_path (Path, optional): _description_. Defaults to Path(".").
+            destination_folder: Directory under the playlist root for converted files.
+            orginal_path: Source path prefix to replace.
+            updated_path: Replacement path prefix.
         """
 
         if destination_folder not in os.listdir(self.path_to_playlist_folder):
@@ -165,8 +183,7 @@ class LibraryProcessing:
             )
 
     def get_special_playlists(self):
-
-        """_summary_"""
+        """Generate all built-in consistency reports and format playlists."""
         path_to_pl = self.path_to_playlist_folder / "Special_Playlists"
         if "Special_Playlists" not in os.listdir(self.path_to_playlist_folder):
             os.mkdir(path_to_pl)
@@ -180,6 +197,7 @@ class LibraryProcessing:
         self.split_library_by_format()
 
     def _require_columns(self, columns: Sequence[str]) -> None:
+        """Raise an error unless the library dataframe provides every column."""
         if self.df_lib is None:
             raise ValueError("A library dataframe is required for playlist analysis.")
 
@@ -193,6 +211,7 @@ class LibraryProcessing:
     def _export_analysis_playlist(
         self, dataframe: pd.DataFrame, playlist_name: str
     ) -> pd.DataFrame:
+        """Save report tracks as matching CSV and M3U8 files and return them."""
         output_folder = self.path_to_playlist_folder / "Special_Playlists"
         output_folder.mkdir(exist_ok=True)
 
@@ -247,9 +266,9 @@ class LibraryProcessing:
             raise ValueError("At least one column is required to identify an album.")
 
         self._require_columns([*album_columns, "Genre"])
-        genre_counts = self.df_lib.groupby(
-            list(album_columns), dropna=False
-        )["Genre"].transform("nunique")
+        genre_counts = self.df_lib.groupby(list(album_columns), dropna=False)[
+            "Genre"
+        ].transform("nunique")
         inconsistent_genres = self.df_lib[genre_counts > 1].copy()
 
         return self._export_analysis_playlist(
@@ -275,14 +294,14 @@ class LibraryProcessing:
     def get_grouped_df(
         self, path_to_destination: Path = None, disc_or_album: str = "Album"
     ):
-        """_summary_
+        """Build album or disc summaries and save the summary CSV.
 
         Args:
-            path_to_lib (_type_): _description_
-            lib_name (_type_): _description_
+            path_to_destination: Output folder for the summary CSV.
+            disc_or_album: Group tracks by ``Album`` or by ``Album`` and disc.
 
         Returns:
-            _type_: _description_
+            Dataframe with one summary row for each group.
         """
         if path_to_destination is None:
 
@@ -331,23 +350,16 @@ class LibraryProcessing:
         return grouped_df
 
     def get_album_and_disc_df(self):
-        """_summary_"""
+        """Build and retain album-level and disc-level summary dataframes."""
 
         self.album_df = self.get_grouped_df(disc_or_album="Album")
         self.disc_df = self.get_grouped_df(disc_or_album="Disc")
 
     def get_locations_with_multiple_album(self):
-        """ """
+        """Export tracks stored in a location containing multiple albums."""
 
         def group_by_location(x: pd.DataFrame):
-            """_summary_
-
-            Args:
-                x (pd.DataFrame): _description_
-
-            Returns:
-                _type_: _description_
-            """
+            """Count unique album titles stored at one filesystem location."""
 
             return pd.Series({"Number of Album in Location": len(x.Album.unique())})
 
@@ -374,11 +386,11 @@ class LibraryProcessing:
     def get_disc_or_album_with_multiple_values(
         self, disc_or_album: str = "Album", feature: str = "Has Multiple Genre"
     ):
-        """_summary_
+        """Export groups whose calculated boolean feature is true.
 
         Args:
-            disc_or_album (str, optional): _description_. Defaults to "Album".
-            feature (str, optional): _description_. Defaults to "Has Multiple Genre".
+            disc_or_album: Select album or disc summary data.
+            feature: Summary feature name without the album or disc prefix.
         """
 
         if disc_or_album == "Album":
@@ -405,22 +417,22 @@ class LibraryProcessing:
         )
 
     def get_disc_with_missing_tracks(self):
-        """_summary_"""
+        """Export discs whose track-number range has gaps."""
         self.get_disc_or_album_with_multiple_values(
             disc_or_album="Disc", feature="Is Missing Tracks"
         )
 
     def get_album_with_multiple_genre(self):
-        """_summary_"""
+        """Export tracks from albums with inconsistent genres."""
         return self.find_inconsistent_album_genres()
 
     def split_library_by_resolution(
-        self, resolutions: list = [128, 192, 256, 320, 1000]
+        self, resolutions: Sequence[int] = (128, 192, 256, 320, 1000)
     ):
-        """_summary_
+        """Create M3U8 playlists partitioned by disc bitrate thresholds.
 
         Args:
-            resolutions (list, optional): _description_. Defaults to [128, 192, 256, 320, 1000].
+            resolutions: Inclusive bitrate thresholds in kilobits per second.
         """
         path_to_pl = self.path_to_playlist_folder / "Playlists_by_Resolution"
         if "Playlists_by_Resolution" not in os.listdir(self.path_to_playlist_folder):
@@ -440,7 +452,7 @@ class LibraryProcessing:
         df_to_m3u8(df_temp, file_name, path_to_pl)
 
     def split_library_by_format(self):
-        """_summary_"""
+        """Create one M3U8 playlist for each disc file format."""
         path_to_pl = self.path_to_playlist_folder / "Playlists_by_Format"
         if "Playlists_by_Format" not in os.listdir(self.path_to_playlist_folder):
             os.mkdir(path_to_pl)

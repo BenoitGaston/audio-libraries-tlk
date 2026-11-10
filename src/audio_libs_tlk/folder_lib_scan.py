@@ -25,11 +25,10 @@ import datetime
 def extract_tags(
     song_tag: music_tag.AudioFile, album_path: Path, song_file: Path
 ) -> dict:
-
-    """_summary_
+    """Extract supported audio tags and filesystem locations from one file.
 
     Returns:
-        _type_: _description_
+        Metadata compatible with the iTunes-style dataframe used by the package.
     """
     result_dict = {}
     keys_to_get = tag_keys + [
@@ -55,13 +54,13 @@ def extract_tags(
 
 
 def loop_over_a_music_path(music_lib_path: Path) -> pd.DataFrame:
-    """_summary_
+    """Scan all supported audio files below a music-library directory.
 
     Args:
-        music_lib_path (Path): _description_
+        music_lib_path: Root directory to scan.
 
     Returns:
-        pd.DataFrame: _description_
+        Dataframe with one row per discovered audio file.
     """
     music_lib_list = []
 
@@ -87,13 +86,13 @@ def loop_over_a_music_path(music_lib_path: Path) -> pd.DataFrame:
 
 
 def loop_over_a_songs_df(songs_df: pd.DataFrame) -> pd.DataFrame:
-    """_summary_
+    """Rescan the audio files referenced by a dataframe.
 
     Args:
-        songs_df (pd.DataFrame): _description_
+        songs_df: Dataframe containing a ``Location`` column.
 
     Returns:
-        pd.DataFrame: _description_
+        Dataframe containing refreshed metadata for each referenced file.
     """
     music_lib_list = []
 
@@ -113,11 +112,11 @@ def loop_over_a_songs_df(songs_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def loop_over_playlist_path(music_lib_path: Path, path_to_dest_folder: Path) -> None:
-    """Loop over all playlists in the music library path and copy them to the destination folder.
+    """Copy M3U8 files from a music library into a destination folder.
 
     Args:
-        music_lib_path (Path): Path to the music library folder.
-        path_to_dest_folder (Path): Path to the destination folder where playlists will be copied.
+        music_lib_path: Root directory containing playlists.
+        path_to_dest_folder: Destination folder for copied playlists.
     """
     suffixes = playlist_extensions
     for playlist_path, _, filenames in os.walk(music_lib_path):
@@ -134,13 +133,13 @@ def loop_over_playlist_path(music_lib_path: Path, path_to_dest_folder: Path) -> 
 
 
 def format_df_to_iTunes_csv_format(df_lib_scanned: pd.DataFrame) -> pd.DataFrame:
-    """_summary_
+    """Normalize scanned tag names and numeric values to iTunes column names.
 
     Args:
-        df_lib_scanned (pd.DataFrame): _description_
+        df_lib_scanned: Raw dataframe returned by the folder scanner.
 
     Returns:
-        pd.DataFrame: _description_
+        The normalized dataframe.
     """
     df_lib_scanned.rename(columns=tags_to_itunes_cols_dict, inplace=True)
     df_lib_scanned.rename(
@@ -178,12 +177,15 @@ def format_df_to_iTunes_csv_format(df_lib_scanned: pd.DataFrame) -> pd.DataFrame
 
 
 class FolderLibraryScan:
+    """Scan a folder-organized music library and preserve its playlists."""
+
     def __init__(
         self,
         path_to_music_folder: Path = None,
         path_to_dest_folder: Path = None,
         force_scan: bool = True,
     ):
+        """Configure a folder scanner and ensure its playlist folder exists."""
 
         self.path_to_music_folder = path_to_music_folder
         self.path_to_dest_folder = path_to_dest_folder
@@ -197,10 +199,10 @@ class FolderLibraryScan:
         self.df_lib = pd.DataFrame([])
 
     def get_folder_library_as_csv(self):
-        """_summary_
+        """Load a cached folder scan or scan the music folder and save a CSV.
 
         Returns:
-            _type_: _description_
+            Normalized dataframe containing the scanned track metadata.
         """
 
         files = os.listdir(self.path_to_dest_folder)
@@ -225,7 +227,7 @@ class FolderLibraryScan:
             )
 
             df_lib_scanned = loop_over_a_music_path(
-                music_lib_path=self.path_to_dest_folder
+                music_lib_path=self.path_to_music_folder
             )
 
         if not df_lib_scanned.empty:
@@ -240,6 +242,6 @@ class FolderLibraryScan:
         return df_lib_scanned
 
     def get_all_playlists_from_a_folder(self):
-        """_summary_"""
+        """Copy M3U8 playlists from the music folder into its playlist directory."""
 
         loop_over_playlist_path(self.path_to_music_folder, self.path_to_playlist_folder)

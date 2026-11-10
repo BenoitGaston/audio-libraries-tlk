@@ -23,13 +23,14 @@ logger = logging.getLogger(__name__)
 
 
 class iTunesLibraryScan:
-    """_summary_"""
+    """Load an exported iTunes or Apple Music XML library and its playlists."""
 
     def __init__(
         self,
         path_to_library_file: Path = None,
         path_to_dest_folder: Path = None,
     ):
+        """Configure an XML scanner and load its parsed library representation."""
 
         if path_to_dest_folder != None:
             self.path_to_dest_folder = path_to_dest_folder
@@ -57,15 +58,7 @@ class iTunesLibraryScan:
         self.lib_lib = self.get_lib_as_lib_object()
 
     def get_lib_as_lib_object(self):
-        """_summary_
-
-        Args:
-            path_to_lib_folder (_type_): _description_
-            lib_name (_type_): _description_
-
-        Returns:
-            _type_: _description_
-        """
+        """Parse the XML library or load its cached parsed representation."""
 
         pkl_name = self.lib_name.replace(".xml", ".pickle")
 
@@ -89,15 +82,7 @@ class iTunesLibraryScan:
         return lib
 
     def convert_lib_to_csv(self):
-        """_summary_
-
-        Args:
-            path_to_lib_folder (_type_): _description_
-            lib_name (_type_): _description_
-
-        Returns:
-            _type_: _description_
-        """
+        """Convert source XML track metadata to the package's CSV dataframe."""
 
         tree = ET.parse(self.path_to_library_file)
         root = tree.getroot()
@@ -159,14 +144,10 @@ class iTunesLibraryScan:
         return df[itunes_usefull_cols]
 
     def get_itunes_library_as_csv(self):
-        """_summary_
-
-        Args:
-            path_to_lib_folder (_type_): _description_
-            lib_name (_type_): _description_
+        """Load the cached CSV or create it from XML, then derive path columns.
 
         Returns:
-            _type_: _description_
+            iTunes-style track dataframe with ``Location`` and ``Album Location``.
         """
         csv_name = self.lib_name.replace(".xml", ".csv")
         if csv_name in os.listdir(self.path_to_dest_folder):
@@ -203,13 +184,7 @@ class iTunesLibraryScan:
         return df_lib
 
     def get_all_playlists_from_itunes_library(self):
-        """_summary_
-
-
-        Args:
-            path_to_lib_folder (_type_): _description_
-            lib_name (_type_): _description_
-        """
+        """Export every playlist in the parsed iTunes library to M3U8."""
         if self.lib_lib != None:
             for playlist in self.lib_lib.playlists:
 

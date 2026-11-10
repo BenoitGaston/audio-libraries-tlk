@@ -1,5 +1,6 @@
 from .convertion_functions import df_to_m3u8
 from .convertion_functions import convert_a_playlist
+from .models import AudioLibrary
 import numpy as np
 from pathlib import Path
 import pandas as pd
@@ -99,9 +100,27 @@ def group_by_cd(x):
 
 
 class LibraryProcessing:
-    def __init__(self, path_to_playlist_folder: Path, df_lib: pd.DataFrame = None):
+    def __init__(
+        self,
+        path_to_playlist_folder: Path,
+        df_lib: pd.DataFrame | AudioLibrary = None,
+    ):
 
-        self.df_lib = df_lib
+        if isinstance(df_lib, AudioLibrary):
+            self.library = df_lib
+            self.df_lib = pd.DataFrame(
+                [
+                    track.model_dump(
+                        by_alias=True, exclude_none=True, mode="python"
+                    )
+                    for track in df_lib.tracks
+                ]
+            )
+        else:
+            self.df_lib = df_lib
+            self.library = (
+                AudioLibrary.from_dataframe(df_lib) if df_lib is not None else None
+            )
         self.path_to_playlist_folder = path_to_playlist_folder
         if type(self.path_to_playlist_folder) == str:
             self.path_to_playlist_folder = Path(self.path_to_playlist_folder)

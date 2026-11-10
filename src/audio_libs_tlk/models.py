@@ -1,6 +1,74 @@
-from pydantic import BaseModel
+from pathlib import Path
 from typing import Dict
+
 import pandas as pd
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field
+
+
+class AudioTrack(BaseModel):
+    """Metadata for one track in an audio library."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    name: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("Name", "Title"),
+        serialization_alias="Name",
+    )
+    artist: str | None = Field(
+        default=None, validation_alias="Artist", serialization_alias="Artist"
+    )
+    album: str | None = Field(
+        default=None, validation_alias="Album", serialization_alias="Album"
+    )
+    album_artist: str | None = Field(
+        default=None,
+        validation_alias="Album Artist",
+        serialization_alias="Album Artist",
+    )
+    genre: str | None = Field(
+        default=None, validation_alias="Genre", serialization_alias="Genre"
+    )
+    location: str | Path | None = Field(
+        default=None, validation_alias="Location", serialization_alias="Location"
+    )
+
+
+class AudioLibrary(BaseModel):
+    """A collection of tracks scanned from a music library."""
+
+    name: str | None = None
+    tracks: list[AudioTrack]
+
+    @classmethod
+    def from_dataframe(
+        cls, dataframe: pd.DataFrame, name: str | None = None
+    ) -> "AudioLibrary":
+        records = dataframe.where(pd.notna(dataframe), None).to_dict("records")
+        return cls(name=name, tracks=[AudioTrack.model_validate(record) for record in records])
+
+
+class PlaylistTrack(AudioTrack):
+    """A track entry that can be emitted in an M3U8 playlist."""
+
+    total_time: int = Field(
+        validation_alias="Total Time", serialization_alias="Total Time", ge=0
+    )
+
+
+class Playlist(BaseModel):
+    """A named playlist and its ordered track entries."""
+
+    name: str
+    tracks: list[PlaylistTrack]
+
+    @classmethod
+    def from_dataframe(cls, name: str, dataframe: pd.DataFrame) -> "Playlist":
+        records = dataframe.where(pd.notna(dataframe), None).to_dict("records")
+        return cls(
+            name=name,
+            tracks=[PlaylistTrack.model_validate(record) for record in records],
+        )
 
 
 class iTunesDataFrameSchema(BaseModel):

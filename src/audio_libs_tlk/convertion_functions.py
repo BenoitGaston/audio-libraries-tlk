@@ -8,6 +8,8 @@ from urllib.parse import unquote
 import os
 import unicodedata
 
+from .models import Playlist
+
 
 def convert_a_playlist(
     path_to_playlist_folder: Path,
@@ -119,18 +121,18 @@ def df_to_m3u8(
     if not file_name.endswith(".m3u8"):
         file_name += ".m3u8"
 
-    f = open(path_to_m3u8_folder / file_name, "w+")
-    f.write(f"#EXTM3U\r\n")
+    playlist = Playlist.from_dataframe(file_name, playlist_df)
+    with open(path_to_m3u8_folder / file_name, "w+") as playlist_file:
+        playlist_file.write("#EXTM3U\r\n")
 
-    for _, row in playlist_df.iterrows():
-
-        total_time = row["Total Time"]
-        name = row["Name"]
-        artist = row["Artist"]
-        location = str(row["Location"])
-
-        f.write(f"#EXTINF:{round(int(total_time)/1000)} ,{name} - {artist}\r\n")
-        f.write(f"{unquote(location)}\r\n".replace("%20", " "))
+        for track in playlist.tracks:
+            playlist_file.write(
+                f"#EXTINF:{round(track.total_time / 1000)} ,"
+                f"{track.name} - {track.artist}\r\n"
+            )
+            playlist_file.write(
+                f"{unquote(str(track.location))}\r\n".replace("%20", " ")
+            )
 
     f.close()
 

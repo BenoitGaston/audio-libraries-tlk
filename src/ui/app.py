@@ -5,7 +5,7 @@ from pathlib import Path
 import streamlit as st
 
 from audio_libs_tlk.lib_scan import scan_and_process
-from ui.logic import artwork_execution_allowed
+from ui.logic import artwork_execution_allowed, is_supported_library_source
 
 
 ARTWORK_OPERATION_LABELS = {
@@ -46,8 +46,8 @@ def main() -> None:
 
     with st.form("library-processing"):
         library_path_text = st.text_input(
-            "Library directory",
-            help="Directory containing an iTunes/Apple Music XML export or music folders.",
+            "Library directory or XML file",
+            help="Directory containing an iTunes/Apple Music XML export or music folders, or an XML export file.",
         )
         st.subheader("Playlist conversion")
         original_path = st.text_input("Original path in playlists (optional)")
@@ -87,9 +87,9 @@ def main() -> None:
 
     errors = []
     if not library_path_text.strip():
-        errors.append("Enter a library directory.")
-    elif not Path(library_path_text).expanduser().is_dir():
-        errors.append("The library directory does not exist.")
+        errors.append("Enter a library directory or XML file.")
+    elif not is_supported_library_source(Path(library_path_text).expanduser()):
+        errors.append("Enter an existing library directory or XML file.")
     if bool(original_path.strip()) != bool(updated_path.strip()):
         errors.append("Provide both playlist conversion paths or leave both blank.")
     if not artwork_execution_allowed(

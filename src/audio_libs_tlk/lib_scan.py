@@ -6,7 +6,6 @@ from .processing_lib import LibraryProcessing
 from .models import ProcessingResult
 
 from pathlib import Path
-import os
 
 
 OUTPUT_FILE_SUFFIXES = {".csv", ".m3u8", ".pickle"}
@@ -91,7 +90,8 @@ def scan_and_process(
     """Scan a library and run the requested playlist and artwork operations.
 
     Args:
-        path_to_library_data: Directory containing an XML export or music folders.
+        path_to_library_data: Directory containing an XML export or music folders,
+            or a direct path to an XML export.
         orginal_path_written_in_playlists: Source prefix to replace in playlists.
         updated_path_written_in_playlists: Replacement prefix for converted playlists.
         create_cover_jpg: Create ``cover.jpg`` files from embedded artwork.
@@ -104,21 +104,33 @@ def scan_and_process(
         Processing locations and the CSV, M3U8, and pickle artifacts available
         after the operation.
     """
-    xml_files = [f for f in os.listdir(path_to_library_data) if f.endswith(".xml")]
+    library_source = Path(path_to_library_data).expanduser()
+    if library_source.is_file():
+        if library_source.suffix.lower() != ".xml":
+            raise ValueError("The library file must be an XML export.")
+        xml_files = [library_source]
+    elif library_source.is_dir():
+        xml_files = [
+            path
+            for path in library_source.iterdir()
+            if path.is_file() and path.suffix.lower() == ".xml"
+        ]
+    else:
+        raise ValueError("The library path does not exist.")
 
     if len(xml_files) > 0:
-        path_to_library_file = Path(path_to_library_data) / xml_files[0]
-        path_to_dest_folder = Path(path_to_library_data)
+        path_to_library_file = xml_files[0]
+        path_to_dest_folder = path_to_library_file.parent
         path_to_music_folder = None
         path_to_playlist_folder = (
-            path_to_dest_folder / f"{xml_files[0].replace('.xml','_Playlists')}"
+            path_to_dest_folder / f"{path_to_library_file.stem}_Playlists"
         )
         scan_only_for_playlists_convertion = False
 
     else:
         path_to_library_file = None
-        path_to_dest_folder = Path(path_to_library_data)
-        path_to_music_folder = path_to_library_data
+        path_to_dest_folder = library_source
+        path_to_music_folder = library_source
 
         path_to_playlist_folder = path_to_dest_folder / "Playlists"
         if (

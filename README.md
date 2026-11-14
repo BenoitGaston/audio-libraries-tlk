@@ -46,6 +46,16 @@ Artwork controls modify source audio files. The app requires an explicit confirm
 before such a run and can remember that confirmation only for the current browser
 session.
 
+## Running the tests
+
+From the repository root, install the development dependencies and run the test suite
+with:
+
+```
+uv sync --group dev
+uv run pytest
+```
+
 
 ## Warnings
 

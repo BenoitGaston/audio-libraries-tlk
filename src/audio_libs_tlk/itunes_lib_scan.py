@@ -124,6 +124,22 @@ class iTunesLibraryScan:
         logger.info("Converted iTunes library to a dataframe with shape %s", df.shape)
         logger.debug("iTunes library columns: %s", list(df.columns))
 
+        required_columns = {"Track ID", "Name", "Artist", "Album Artist", "Album"}
+        missing_required_columns = required_columns.difference(df.columns)
+        if missing_required_columns:
+            missing_columns = ", ".join(sorted(missing_required_columns))
+            raise ValueError(
+                f"iTunes library is missing required track columns: {missing_columns}"
+            )
+
+        optional_columns = (
+            set(itunes_numeric_columns)
+            | set(itunes_date_columns)
+            | set(itunes_usefull_cols)
+        ).difference(required_columns)
+        for column in optional_columns.difference(df.columns):
+            df[column] = np.nan
+
         df[itunes_numeric_columns] = df[itunes_numeric_columns].apply(pd.to_numeric)
 
         df[itunes_date_columns] = df[itunes_date_columns].apply(pd.to_datetime)

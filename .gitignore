@@ -214,4 +214,5 @@ cython_debug/
 .pypirc
 
 # Local iTunes library fixture
-tests/iTunesLibrary-2024-02-28.xml
+tests/Small-Library.xml
+tests/Small-Library.pickle
